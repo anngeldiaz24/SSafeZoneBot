@@ -190,7 +190,7 @@ def login_facial():
             print("Bienvenido al sistema usuario: ",usuario_login)
             print("Compatibilidad con la foto del registro: ",similitud)
         else:
-            print("Rostro incorrecto, Cerifique su usuario")
+            print("Rostro incorrecto, Verifique su usuario")
             print("Compatibilidad con la foto del registro: ",similitud)
             Label(pantalla2, text = "Incompatibilidad de rostros", fg = "red", font = ("Calibri",11)).pack()
     else:

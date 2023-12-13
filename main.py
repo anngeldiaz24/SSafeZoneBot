@@ -1,7 +1,15 @@
 from telegram import Update
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
+import os
+import os
+from dotenv import load_dotenv
 
-user_name = 'SSafeZoneBot'
+# Cargar variables de entorno desde el archivo .env
+load_dotenv()
+
+# Acceder a las variables de entorno
+token = os.getenv('token')
+user_name = os.getenv('user_name')
 
 #comandos
 async def start(update: Update, context: ContextTypes):

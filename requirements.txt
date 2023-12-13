@@ -5,3 +5,4 @@ mtcnn
 numpy
 python-telegram-bot
 tensorflow
+python-dotenv

@@ -3,7 +3,7 @@ from telegram.ext import Application, CommandHandler, MessageHandler, filters, C
 import os
 import os
 from dotenv import load_dotenv
-
+# Comentario realizo por Axl11
 # Cargar variables de entorno desde el archivo .env
 load_dotenv()
 

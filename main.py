@@ -1,7 +1,6 @@
 from telegram import Update
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
 
-token = '6772153244:AAEaLsgZOn-ta8U_8r3UqrM4zhcVTKKGiis'
 user_name = 'SSafeZoneBot'
 
 #comandos

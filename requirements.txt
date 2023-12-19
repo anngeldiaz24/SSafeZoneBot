@@ -6,3 +6,4 @@ numpy
 python-telegram-bot
 tensorflow
 python-dotenv
+pyTelegramBotAPI

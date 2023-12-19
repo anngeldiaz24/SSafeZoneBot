@@ -1,70 +1,83 @@
-from telegram import Update
-from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
-import os
+import telebot
+from telebot import types
+import time
 import os
 from dotenv import load_dotenv
-# Comentario realizo por Axl11
+
 # Cargar variables de entorno desde el archivo .env
 load_dotenv()
 
-# Acceder a las variables de entorno
-token = os.getenv('token')
-user_name = os.getenv('user_name')
+# Accedemos a las variables de entorno
+TOKEN = os.getenv('token')
+BOT_USERNAME = os.getenv('bot_username') # Nombre de usuario de nuestro bot
 
-#comandos
-async def start(update: Update, context: ContextTypes):
-    await update.message.reply_text("¡Hola!, soy SSafeZoneBot. ¿En qué puedo ayudarte?")
+# Conexión con nuestro BOT
+bot = telebot.TeleBot(TOKEN)
 
-async def help(update: Update, context: ContextTypes):
-    await update.message.reply_text("Ayuda")
+# Responde al comando /start y envia el menu de opciones al usuario
+@bot.message_handler(commands=['start'])
+def send_welcome(message):
+    user = message.from_user # Nombre de usuario en Telegram del cliente
+    bot.reply_to(message, f'¡Hola {user.first_name}! Bienvenido a tu bot de seguridad {BOT_USERNAME}.')
 
-async def custom(update: Update, context: ContextTypes):
-    await update.message.reply_text(update.message.text)
+    # Inicializa el contenido (cuerpo) del menú
+    markup = types.InlineKeyboardMarkup(row_width=1)
 
-def handle_response(text: str, context: ContextTypes, update: Update):
-    proccesed_text = text.lower()
-    print(proccesed_text)
-    if 'hola' in proccesed_text:
-        return 'Hola, ¿Cómo estás?'
-    elif 'adios' in proccesed_text:
-        return 'Adios'
-    else:  
-        return 'No entiendo'
+    # Creamos los botones y las opciones disponibles del menú
+    btn_activar_alarma = types.InlineKeyboardButton('Activar alarma', callback_data='activar_alarma')
+    btn_llamar_policia = types.InlineKeyboardButton('Llamar a la policia', callback_data='llamar_policia')
+    btn_monitorear_camara = types.InlineKeyboardButton('Monitorear camara', callback_data='monitorear_camara')
+    btn_bloquear_puertas_ventanas = types.InlineKeyboardButton('Bloquear puertas y ventanas', callback_data='bloquear_puertas_ventanas')
 
-async def handle_message(update: Update, context: ContextTypes):
-    message_type = update.message.chat.type
-    text = update.message.text
-    
-    if message_type == 'group':
-        if text.startswith(user_name):
-            new_text = text.replace(user_name, '')
-            response = handle_response(new_text, context, update)
-        else:
-            return
+    # Agregamos los botones del menú al markup
+    markup.add(btn_activar_alarma, btn_llamar_policia, btn_monitorear_camara, btn_bloquear_puertas_ventanas)
+
+    # Enviar mensaje con los botones
+    bot.send_message(message.chat.id, "¿Qué deseas realizar?\n<b>Selecciona una opción:</b>", parse_mode="html", reply_markup=markup)
+
+# Responde al comando /help
+@bot.message_handler(commands=['help'])
+def send_help(message):
+    bot.reply_to(message, 'Puedes interactuar conmigo usando comandos. Por ahora, solo respondo a /start y /help')
+
+# Responde a los mensajes de texto que no son comandos
+@bot.message_handler(content_types=["text"])
+def bot_mensajes_texto(message):
+    # Gestiona los mensajes de texto recibidos
+    if message.text.startswith("/"):
+        bot.send_message(message.chat.id, "Escribe un comando disponible.")
     else:
-        response = handle_response(text,context,update)
-    
-    await update.message.reply_text(response)
+        bot.send_message(message.chat.id, "Este no es un comando valido. Por favor, escribe un comando valido que inicie con '<b>/</b>'.", parse_mode="html")
 
-async def error(update: Update, context: ContextTypes):
-    print(context.error)
-    await update.message.reply_text('Ha ocurrido un error')
-    
-if __name__ == '__main__':
-    print('Iniciando bot...')
-    app = Application.builder().token(token).build()
-    
-    #Crear comandos
-    app.add_handler(CommandHandler('start', start))
-    app.add_handler(CommandHandler('help', help))
-    app.add_handler(CommandHandler('echo', custom))
-    
-    #crear respuestas
-    app.add_handler(MessageHandler(filters.TEXT, handle_message))
-    
-    #crear los erorres
-    app.add_error_handler(error)
-    
-    #iniciar el bot
-    print('Bot iniciado')
-    app.run_polling(poll_interval=1, timeout=10)
+# @bot.message_handler(func=lambda m: True)
+# def echo_all(message):
+# bot.reply_to(message, message.text)
+
+# Responde a cada una de las opciones del menú que son enviadas con /start
+@bot.callback_query_handler(func=lambda call:True)
+def callback_query(call):
+    if call.data == 'activar_alarma':
+        bot.answer_callback_query(call.id, "Se ha enviado la petición para que suene la alarma", show_alert=True)
+        respuesta_alarma = bot.send_message(call.message.chat.id, "Intentando establecer conexión con el sistema...")
+        time.sleep(3)
+        bot.edit_message_text("Alarma en curso...", call.message.chat.id, respuesta_alarma.message_id)
+    elif call.data == 'llamar_policia':
+        bot.answer_callback_query(call.id, "Se ha enviado la petición para que se establezca la llamada con la policia", show_alert=True)
+        respuesta_policia = bot.send_message(call.message.chat.id, "Intentando establecer conexión con el sistema...")
+        time.sleep(3)
+        bot.edit_message_text("Llamada en curso...", call.message.chat.id, respuesta_policia.message_id)
+    elif call.data == 'monitorear_camara':
+        bot.answer_callback_query(call.id, "Monitoreando camara...", show_alert=True)
+    elif call.data == 'bloquear_puertas_ventanas':
+        bot.answer_callback_query(call.id, "Puertas y ventanas bloqueadas", show_alert=True)
+
+@bot.message_handler(commands=['foto'])
+def send_image(message):
+    img_url = 'https://c0.klipartz.com/pngpicture/40/304/gratis-png-discos-compactos-guadalajara-chivas-usa-houston-dynamo-san-jose-terremotos-liga-mx-futbol-thumbnail.png'
+    bot.send_photo(chat_id=message.chat.id, photo=img_url, caption='El mejor equipo del futbol mexicano')
+
+# Modulo principal del programa
+if __name__ == "__main__":
+    print('Iniciando el bot')
+    bot.polling(none_stop=True)
+    print('Bot finalizado')

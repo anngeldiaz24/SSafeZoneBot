@@ -1,7 +1,6 @@
 from telegram import Update
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
 import os
-import os
 from dotenv import load_dotenv
 # Comentario realizo por Axl11
 # Cargar variables de entorno desde el archivo .env

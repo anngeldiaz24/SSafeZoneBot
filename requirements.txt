@@ -7,3 +7,4 @@ python-telegram-bot
 tensorflow
 python-dotenv
 pyTelegramBotAPI
+mysql-connector-python

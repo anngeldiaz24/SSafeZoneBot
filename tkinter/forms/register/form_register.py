@@ -14,8 +14,7 @@ class Register(RegisterDesign):
     #Inicializamos todo
     def __init__(self):
         super().__init__()
-        #self.path = "C:/Users/Angel Diaz/Desktop/PROYECTO_SAMSUNG_SS/" # your path
-        self.path = "C:/Users/axlvi/OneDrive/Escritorio/Axl Coronado/Proyectos_GitHub/SSafeZoneBot/" # your path
+        self.path = "C:/Users/Angel Diaz/Desktop/SSafeZoneBot/"
     
     def register_capture(self, nombre, password):
         cap = cv2.VideoCapture(0)

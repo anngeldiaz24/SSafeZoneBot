@@ -8,3 +8,4 @@ tensorflow
 python-dotenv
 pyTelegramBotAPI
 mysql-connector-python
+telebot

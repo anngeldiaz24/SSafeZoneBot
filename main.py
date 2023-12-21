@@ -14,7 +14,8 @@ load_dotenv()
 # Accedemos a las variables de entorno
 TOKEN = os.getenv('token')
 BOT_USERNAME = os.getenv('bot_username') # Nombre de usuario de nuestro bot
-MI_CHAT_ID = os.getenv('mi_chat_id') # Id único de nuestro chat
+AXL_CHAT_ID = os.getenv('axl_chat_id') # Id único de nuestro chat (axl)
+ANGEL_CHAT_ID = os.getenv('angel_chat_id') # Id único de nuestro chat (angel)
 
 # Configurar el locale para obtener la fecha y hora en español
 locale.setlocale(locale.LC_TIME, 'es_ES.UTF-8')
@@ -239,4 +240,5 @@ if __name__ == "__main__":
     print('Bot iniciado')
 
     # Se notifica al usuario que el bot se encuentra en funcionamiento
-    bot.send_message(MI_CHAT_ID, f'¡En estos momentos me encuentro disponible para ti!\nAtentamente: <b>{BOT_USERNAME}</b>', parse_mode="html")
+    bot.send_message(AXL_CHAT_ID, f'¡En estos momentos me encuentro disponible para ti!\nAtentamente: <b>{BOT_USERNAME}</b>', parse_mode="html")
+    bot.send_message(ANGEL_CHAT_ID, f'¡En estos momentos me encuentro disponible para ti!\nAtentamente: <b>{BOT_USERNAME}</b>', parse_mode="html")

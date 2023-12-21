@@ -16,8 +16,8 @@ class FormLoginFaceId(FormLoginFaceIdDesign):
     #Inicializamos todo
     def __init__(self):
         super().__init__()
-        self.path = "C:/Users/Angel Diaz/Desktop/SSafeZoneBot/" # your path
-        #self.path = "C:/Users/axlvi/OneDrive/Escritorio/Axl Coronado/Proyectos_GitHub/SSafeZoneBot/" # your path
+        #self.path = "C:/Users/Angel Diaz/Desktop/SSafeZoneBot/" # angel path
+        #self.path = "C:/Users/axlvi/OneDrive/Escritorio/Axl Coronado/Proyectos_GitHub/SSafeZoneBot/" # axl path
         self.color_success = "\033[1;32;40m"
         self.color_error = "\033[1;31;40m"
         self.color_normal = "\033[0;37;40m"

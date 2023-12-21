@@ -3,9 +3,7 @@ opencv-python
 matplotlib
 mtcnn
 numpy
-python-telegram-bot
 tensorflow
 python-dotenv
-pyTelegramBotAPI
+pytelegrambotapi
 mysql-connector-python
-telebot

@@ -8,8 +8,8 @@ from mtcnn.mtcnn import MTCNN
 import database as db
 
 # CONFIG
-#path = "C:/Users/Angel Diaz/Desktop/PROYECTO_SAMSUNG_SS/" # your path
-path = "C:/Users/axlvi/OneDrive/Escritorio/Axl Coronado/Proyectos_GitHub/SSafeZoneBot/" # your path
+#path = "C:/Users/Angel Diaz/Desktop/SSafeZoneBot/" # angel path
+#path = "C:/Users/axlvi/OneDrive/Escritorio/Axl Coronado/Proyectos_GitHub/SSafeZoneBot/" # axl path
 txt_login = "Iniciar Sesión con FACE ID"
 txt_credentials = "Iniciar Sesión con Credenciales"
 txt_register = "Registrarse"

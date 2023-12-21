@@ -1,21 +1,22 @@
 import telebot # para manejar la API de Telegram
 from telebot import types
+from telebot.types import BotCommand # para crear los comandos del menú de telegram
 from telebot.types import ReplyKeyboardMarkup # para crear botones
 from telebot.types import ForceReply # para citar un mensaje
 from telebot.types import ReplyKeyboardRemove # para eliminar botones
-from datetime import datetime
+from datetime import datetime # para acceder a la fecha y hora del sistema
 import os, time, locale
-import threading
-from dotenv import load_dotenv
+import threading # para crear hilos
+from dotenv import load_dotenv # para cargar las variables del .env
 
 # Cargar variables de entorno desde el archivo .env
 load_dotenv()
 
 # Accedemos a las variables de entorno
-TOKEN = os.getenv('token')
-BOT_USERNAME = os.getenv('bot_username') # Nombre de usuario de nuestro bot
-AXL_CHAT_ID = os.getenv('axl_chat_id') # Id único de nuestro chat (axl)
-ANGEL_CHAT_ID = os.getenv('angel_chat_id') # Id único de nuestro chat (angel)
+TOKEN = os.getenv('TOKEN')
+BOT_USERNAME = os.getenv('BOT_USERNAME') # Nombre de usuario de nuestro bot
+AXL_CHAT_ID = os.getenv('AXL_CHAT_ID') # Id único de nuestro chat (axl)
+ANGEL_CHAT_ID = os.getenv('ANGEL_CHAT_ID') # Id único de nuestro chat (angel)
 
 # Configurar el locale para obtener la fecha y hora en español
 locale.setlocale(locale.LC_TIME, 'es_ES.UTF-8')
@@ -51,34 +52,38 @@ def send_welcome(message):
 # Responde al comando /register
 @bot.message_handler(commands=['register'])
 def send_register(message):
-    # Pregunta el username del usuario a registrar
-    markup = ForceReply()
+    """ Pregunta el username del usuario a registrar """
+    markup = ForceReply() # Posiciona como respuesta al mensaje enviado
     bot.send_chat_action(message.chat.id, "typing")
     mensaje_nombre_usuario = bot.send_message(message.chat.id, "Escribe un nombre de usuario", reply_markup=markup)
+    # Pasamos al siguiente paso (preguntar la contraseña) una vez que el usuario escriba su nombre de usuario
     bot.register_next_step_handler(mensaje_nombre_usuario, preguntar_contrasena)
 
 def preguntar_contrasena(message):
-    # Pregunta la contraseña del usuario a registrar
-    # Creamos un diccionario dentro del diccionario usuarios propio del usuario que utiliza el comando
+    """ Pregunta la contraseña del usuario a registrar """
+    # Creamos un diccionario dentro del diccionario 'usuarios' propio del usuario que utiliza el comando
     usuarios[message.chat.id] = {}
+    # Guardamos el 'username' como una key y la respuesta del usuario como el valor
     usuarios[message.chat.id]["username"] = message.text
     global nombre_usuario
     nombre_usuario = message.text
-    markup = ForceReply()
+    markup = ForceReply() # Posiciona como respuesta al mensaje enviado
     bot.send_chat_action(message.chat.id, "typing")
     mensaje_contrasena = bot.send_message(message.chat.id, f'Escribe una contraseña para {nombre_usuario}', reply_markup=markup)
+    # Pasamos al siguiente paso (validar registro) una vez que el usuario escriba su contraseña
     bot.register_next_step_handler(mensaje_contrasena, validar_registro)
 
 def validar_registro(message):
     # Si la contraseña no es mayor a 3 caracteres
     if not len(message.text) > 3:
         # Informamos del error y volvemos a preguntar
-        markup = ForceReply()
+        markup = ForceReply() # Forzamos a que vuelva a respondar el mensaje enviado
         bot.send_chat_action(message.chat.id, "typing")
         mensaje_error = bot.send_message(message.chat.id, f'ERROR: Debes escribir al menos 4 caracteres.\nEscribe una contraseña para {nombre_usuario}', reply_markup=markup)
-        # Volvemos a ejecutar esta función
+        # Volvemos a validar la contraseña llamando a la función
         bot.register_next_step_handler(mensaje_error, validar_registro)
     else: # Si se introdujo la contraseña correctamente
+        # Guardamos el 'password' como una key y la respuesta del usuario como el valor
         usuarios[message.chat.id]["password"] = message.text
         # Definimos 2 botones
         markup = ReplyKeyboardMarkup(
@@ -98,22 +103,23 @@ def guardar_datos_usuario(message):
     """ Guardamos los datos introducidos por el usuario """
     # Si la respuesta de los botones no son validas
     if message.text != "Confirmar registro" and message.text != "Cancelar registro":
-        # informamos del error y volvemos a preguntar
+        # Informamos del error y volvemos a preguntar
         bot.send_chat_action(message.chat.id, "typing")
         mensaje_error = bot.send_message(message.chat.id, 'ERROR: Respuesta no válida.\nPulsa un botón')
-        # Volvemos a ejecutar esta función
+        # # Volvemos a validar la respuesta llamando a la función
         bot.register_next_step_handler(mensaje_error, guardar_datos_usuario)
     else: # Si la respuesta de los botones es válida
+        # Se muestra los datos proporcionados del registro
         bot.send_chat_action(message.chat.id, "typing")
         usuarios[message.chat.id]["verify"] = message.text
         texto = 'Datos introducidos:\n'
         texto+= f'<code>NOMBRE DE USUARIO:</code> {usuarios[message.chat.id]["username"]}\n'
         texto+= f'<code>CONTRASEÑA.......:</code> {usuarios[message.chat.id]["password"]}\n'
         texto+= f'<code>VERIFICACION.....:</code> {usuarios[message.chat.id]["verify"]}\n'
-        markup = ReplyKeyboardRemove()
+        markup = ReplyKeyboardRemove() # Elimina la botonera de telegram (ReplyKeyboardMarkup)
         bot.send_message(message.chat.id, texto, parse_mode="html", reply_markup=markup)
         print(usuarios)
-        del usuarios[message.chat.id]
+        del usuarios[message.chat.id] # Borramos de memoria el objeto creado
 
 # Responde al comando /foto
 @bot.message_handler(commands=['photo'])
@@ -209,9 +215,9 @@ def callback_query(call):
         bot.send_chat_action(call.message.chat.id, "typing")
         bot.answer_callback_query(call.id, "Puertas y ventanas bloqueadas", show_alert=True)
 
-# FUNCIONES ADICIONALES
+""" FUNCIONES ADICIONALES """
+# Obtiene la fecha y hora actual del sistema
 def get_datetime():
-    # Obtener la fecha y hora actual
     fecha_hora_actual = datetime.now()
 
     # Formatear la fecha y hora en un formato legible
@@ -223,15 +229,15 @@ def recibir_mensajes():
     # Bucle infinito que comprueba si hay nuevos mensajes en el bot
     bot.infinity_polling()
 
-# MODULO MAIN (PRINCIPAL) DEL PROGRAMA
+""" MODULO MAIN (PRINCIPAL) DEL PROGRAMA """
 if __name__ == "__main__":
     # Configuramos los comandos disponibles del bot
     bot.set_my_commands([
-        telebot.types.BotCommand("/start", "ve las opciones disponibles que tengo para ti"),
-        telebot.types.BotCommand("/register", "registra a un nuevo usuario"),
-        telebot.types.BotCommand("/photo", "toma una foto actual de la cámara instalada"),
-        telebot.types.BotCommand("/document", "envia la guía de casos de uso del funcionamiento del sistema"),
-        telebot.types.BotCommand("/help", "ve más información de los comandos disponibles")
+        BotCommand("/start", "ve las opciones disponibles que tengo para ti"),
+        BotCommand("/register", "registra a un nuevo usuario"),
+        BotCommand("/photo", "toma una foto actual de la cámara instalada"),
+        BotCommand("/document", "envia la guía de casos de uso del funcionamiento del sistema"),
+        BotCommand("/help", "ve más información de los comandos disponibles")
     ])
     print('Iniciando el bot')
     #bot.polling(none_stop=True)

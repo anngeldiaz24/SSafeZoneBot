@@ -32,3 +32,11 @@ Incluye las librerías **TensorFlow** y **OpenCV**.
     ```
 
 5. Crear base de datos llamada 'ssafezone' y ejecutar el script sql proporcionado
+
+6. Copiar **keys.json.example** y crear **keys.json**
+
+    ```
+    cp keys.json.example keys.json
+    ```
+
+    Modificar contenido de **keys.json**

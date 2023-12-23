@@ -9,6 +9,7 @@ from mtcnn.mtcnn import MTCNN
 import os
 import database as db
 from tkinter import messagebox as msg
+import hashlib
 
 class Register(RegisterDesign):
     #Inicializamos todo
@@ -31,14 +32,17 @@ class Register(RegisterDesign):
         cap.release()
         cv2.destroyAllWindows()
 
-        #Limpiamos las variables
+        # Limpiamos las variables
         self.usuario.delete(0, tk.END)
         self.password.delete(0, tk.END)
         
         pixels = plt.imread(img)
         faces = MTCNN().detect_faces(pixels)
         self.face(img, faces)
-        self.register_face_db(nombre, password, img)
+
+        # Hashear la contraseña antes de almacenarla
+        hashed_password = hashlib.sha256(password.encode()).hexdigest()
+        self.register_face_db(nombre, hashed_password, img)
     
     def face(self, img, faces):
         data = plt.imread(img)

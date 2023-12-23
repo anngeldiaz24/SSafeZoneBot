@@ -1,2 +1,11 @@
+# Ignora archivos relacionados con credenciales
 .env
 keys.json
+# Ignora archivos relacionados con '.pyc'
+tkinter/__pycache__/
+tkinter/forms/login_faceid/__pycache__/
+tkinter/forms/login_tradicional/__pycache__/
+tkinter/forms/master/__pycache__/
+tkinter/forms/register/__pycache__/
+tkinter/main/__pycache__/
+tkinter/util/__pycache__/

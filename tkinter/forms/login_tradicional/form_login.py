@@ -7,6 +7,8 @@ from forms.login_tradicional.form_login_design import FormLoginDesign
 from forms.login_faceid.form_login_faceid import FormLoginFaceId
 from forms.register.form_register import Register
 import database as db
+import hashlib
+
 
 class FormLogin(FormLoginDesign):
     
@@ -20,7 +22,8 @@ class FormLogin(FormLoginDesign):
     
     def login_credentials(self, nombre, password):
         # Obtener el valor de las variables StringVar
-        res_db = db.getUserCredentials(nombre, password)
+        hashed_password = hashlib.sha256(password.encode()).hexdigest()
+        res_db = db.getUserCredentials(nombre, hashed_password)
         if(res_db["affected"]):
             print("Bienvenido")
             self.destroy()  

@@ -2,6 +2,7 @@ import os, time, locale
 import threading # para crear hilos
 from dotenv import load_dotenv # para cargar las variables del .env
 from datetime import datetime # para acceder a la fecha y hora del sistema
+import hashlib # para hashear la contraseña del usuario
 import telebot # para manejar la API de Telegram
 from telebot import types
 from telebot.types import BotCommand # para crear los comandos del menú de telegram
@@ -125,10 +126,13 @@ def guardar_datos_usuario(message):
         username = usuarios[message.chat.id]["username"]
         # Obtenemos el valor del 'password'
         password = usuarios[message.chat.id]["password"]
+        # Hasheamos la password
+        hashed_password = hashlib.sha256(password.encode()).hexdigest()
         print(username) # Imprime en consola el username del usuario a registrar
         print(password) # Imprime en consola el password del usuario a registrar
+        print(hashed_password) # Imprime en consola la password hasheada del usuario a registrar
         # Registramos al usuario con la función que viene desde database.py
-        registerUserBot(username, password)
+        registerUserBot(username, hashed_password)
         del usuarios[message.chat.id] # Borramos de memoria el objeto (diccionario) creado
     elif message.text == "Cancelar registro": # Si la respuesta es "Cancelar registro"
         bot.send_chat_action(message.chat.id, "typing")

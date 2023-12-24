@@ -1,13 +1,14 @@
+import os, time, locale
+import threading # para crear hilos
+from dotenv import load_dotenv # para cargar las variables del .env
+from datetime import datetime # para acceder a la fecha y hora del sistema
 import telebot # para manejar la API de Telegram
 from telebot import types
 from telebot.types import BotCommand # para crear los comandos del menú de telegram
 from telebot.types import ReplyKeyboardMarkup # para crear botones
 from telebot.types import ForceReply # para citar un mensaje
 from telebot.types import ReplyKeyboardRemove # para eliminar botones
-from datetime import datetime # para acceder a la fecha y hora del sistema
-import os, time, locale
-import threading # para crear hilos
-from dotenv import load_dotenv # para cargar las variables del .env
+from tkinter.database import registerUserBot # para registrar al usuario desde el bot
 
 # Cargar variables de entorno desde el archivo .env
 load_dotenv()
@@ -17,6 +18,7 @@ TOKEN = os.getenv('TOKEN')
 BOT_USERNAME = os.getenv('BOT_USERNAME') # Nombre de usuario de nuestro bot
 AXL_CHAT_ID = os.getenv('AXL_CHAT_ID') # Id único de nuestro chat (axl)
 ANGEL_CHAT_ID = os.getenv('ANGEL_CHAT_ID') # Id único de nuestro chat (angel)
+DANIEL_CHAT_ID = os.getenv('DANIEL_CHAT_ID') # Id único de nuestro chat (daniel)
 
 # Configurar el locale para obtener la fecha y hora en español
 locale.setlocale(locale.LC_TIME, 'es_ES.UTF-8')
@@ -107,8 +109,8 @@ def guardar_datos_usuario(message):
         bot.send_chat_action(message.chat.id, "typing")
         mensaje_error = bot.send_message(message.chat.id, 'ERROR: Respuesta no válida.\nPulsa un botón')
         # # Volvemos a validar la respuesta llamando a la función
-        bot.register_next_step_handler(mensaje_error, guardar_datos_usuario)
-    else: # Si la respuesta de los botones es válida
+        bot.register_next_step_handler(mensaje_error, guardar_datos_usuario)  
+    elif message.text == "Confirmar registro": # Si la respuesta es "Confirmar registro"
         # Se muestra los datos proporcionados del registro
         bot.send_chat_action(message.chat.id, "typing")
         usuarios[message.chat.id]["verify"] = message.text
@@ -118,8 +120,20 @@ def guardar_datos_usuario(message):
         texto+= f'<code>VERIFICACION.....:</code> {usuarios[message.chat.id]["verify"]}\n'
         markup = ReplyKeyboardRemove() # Elimina la botonera de telegram (ReplyKeyboardMarkup)
         bot.send_message(message.chat.id, texto, parse_mode="html", reply_markup=markup)
-        print(usuarios)
-        del usuarios[message.chat.id] # Borramos de memoria el objeto creado
+        print(usuarios) # Imprime en consola el diccionario del usuario a registrar
+        # Obtenemos el valor del 'username'
+        username = usuarios[message.chat.id]["username"]
+        # Obtenemos el valor del 'password'
+        password = usuarios[message.chat.id]["password"]
+        print(username) # Imprime en consola el username del usuario a registrar
+        print(password) # Imprime en consola el password del usuario a registrar
+        # Registramos al usuario con la función que viene desde database.py
+        registerUserBot(username, password)
+        del usuarios[message.chat.id] # Borramos de memoria el objeto (diccionario) creado
+    elif message.text == "Cancelar registro": # Si la respuesta es "Cancelar registro"
+        bot.send_chat_action(message.chat.id, "typing")
+        markup = ReplyKeyboardRemove() # Elimina la botonera de telegram (ReplyKeyboardMarkup)
+        bot.send_message(message.chat.id, "Registro cancelado exitosamente", parse_mode="html", reply_markup=markup)
 
 # Responde al comando /foto
 @bot.message_handler(commands=['photo'])
@@ -248,3 +262,4 @@ if __name__ == "__main__":
     # Se notifica al usuario que el bot se encuentra en funcionamiento
     bot.send_message(AXL_CHAT_ID, f'¡En estos momentos me encuentro disponible para ti!\nAtentamente: <b>{BOT_USERNAME}</b>', parse_mode="html")
     bot.send_message(ANGEL_CHAT_ID, f'¡En estos momentos me encuentro disponible para ti!\nAtentamente: <b>{BOT_USERNAME}</b>', parse_mode="html")
+    bot.send_message(DANIEL_CHAT_ID, f'¡En estos momentos me encuentro disponible para ti!\nAtentamente: <b>{BOT_USERNAME}</b>', parse_mode="html")

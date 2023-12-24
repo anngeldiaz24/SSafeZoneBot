@@ -41,6 +41,27 @@ def registerUser(name, password, photo):
             con.close()
     return {"id": id, "affected":inserted}
 
+def registerUserBot(name, password):
+    id = 0
+    inserted = 0
+
+    try:
+        con = db.connect(host=keys["host"], user=keys["user"], password=keys["password"], port=keys["port"], database=keys["database"])
+        cursor = con.cursor()
+        sql = "INSERT INTO `user`(nombre, password) VALUES (%s,%s)"
+
+        cursor.execute(sql, (name, password))
+        con.commit()
+        inserted = cursor.rowcount
+        id = cursor.lastrowid
+    except db.Error as e:
+        print(f"Failed inserting user: {e}")
+    finally:
+        if con.is_connected():
+            cursor.close()
+            con.close()
+    return {"id": id, "affected":inserted}
+
 def getUser(name, path):
     id = 0
     rows = 0

@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter.font import BOLD
 import util.generic as utl
-from forms.master.form_master import MasterPanel
+from forms.dashboard.form_master_design import Panel
 
 class RegisterDesign:
     
@@ -12,6 +12,7 @@ class RegisterDesign:
     def __init__(self):
         self.ventana = tk.Tk()
         self.ventana.title("Sign Up")
+        self.ventana.iconbitmap("./Tkinter/img/SecurityCamera.ico")
         self.ventana.geometry("800x500")
         self.ventana.config(bg="#FFFFFF")
         self.ventana.resizable(width=0, height=0)

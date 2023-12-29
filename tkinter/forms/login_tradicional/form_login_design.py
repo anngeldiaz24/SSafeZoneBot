@@ -15,6 +15,7 @@ class FormLoginDesign:
     def __init__(self):
         self.ventana = tk.Tk()
         self.ventana.title("Log In")
+        self.ventana.iconbitmap("./Tkinter/img/SecurityCamera.ico")
         self.ventana.geometry("800x500")
         self.ventana.config(bg="#FFFFFF")
         self.ventana.resizable(width=0, height=0)

@@ -29,12 +29,13 @@ class FormLogin(FormLoginDesign):
         if(res_db["affected"]):
             #print("Bienvenido")
             self.destroy()  
-            msg.showinfo(message="Has iniciado sesión", title="¡Éxito!")
-            self.on_login(True)  # Ejecuta el callback con True si la autenticación es exitosa
+            #msg.showinfo(message="Has iniciado sesión", title="¡Éxito!")
+            nombre_de_usuario = nombre  # Obtén el nombre de usuario
+            self.on_login(True, nombre_de_usuario)  # Ejecuta el callback con True y el nombre de usuario
         else:
             print("¡Error! Usuario o credenciales incorrectas")
             msg.showinfo(message="¡Error! Usuario o credenciales incorrectas", title="¡Error!")
-            self.on_login(False)  # 
+            self.on_login(False, None) 
     
         
  

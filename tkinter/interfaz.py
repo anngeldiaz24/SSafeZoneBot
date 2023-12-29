@@ -1,5 +1,6 @@
 from main.main import Main
-from forms.master.form_master import MasterPanel
+#from forms.dashboard.form_master_design import Panel
 
 
 app = Main()
+#app.run()

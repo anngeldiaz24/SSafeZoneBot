@@ -61,13 +61,13 @@ class FormLoginFaceId(FormLoginFaceIdDesign):
                     print("Bienvenido")
                     self.destroy()  
                     msg.showinfo(message="Inicio de sesión exitoso", title="¡Éxito!")
-                    self.on_login_faceid(True)
+                    self.on_login_faceid(True, nombre)
                 else:
                     print("{}Compatibilidad del {:.1%}{}".format(self.color_error, float(comp), self.color_normal))
                     print("ERROR")
                     self.destroy()  
                     msg.showinfo(message="Incompatibilidad de datos", title="¡Error!")
-                    self.on_login_faceid(False)
+                    self.on_login_faceid(False,None)
                 os.remove(img_user)
         
             else:

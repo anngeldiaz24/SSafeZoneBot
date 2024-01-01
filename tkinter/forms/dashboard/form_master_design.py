@@ -3,7 +3,7 @@ from tkinter import font
 from tkinter.font import BOLD
 from config import COLOR_MENU_CURSOR_ENCIMA, COLOR_CUERPO_PRINCIPAL, COLOR_MENU_LATERAL, COLOR_BARRA_SUPERIOR
 import util.generic as utl
-
+from forms.dashboard.form_hogar import HogarDesign
 
 class Panel(tk.Tk):
     
@@ -14,7 +14,7 @@ class Panel(tk.Tk):
         self.username = username
         print(self.username)
         #Primero cargamos la imagen   
-        self.logo = utl.leer_imagen("./Tkinter/img/samsung1.jpg", (560, 136))
+        self.logo = utl.leer_imagen("./Tkinter/img/familia.jpg", (600, 400))
         self.perfil = utl.leer_imagen("./Tkinter/img/user2.png", (105, 105))
         self.config_window()
         self.paneles()
@@ -92,32 +92,37 @@ class Panel(tk.Tk):
         username_label.pack(side=tk.TOP, pady=(0, 10))  # Ajustar el espaciado según sea necesario
         
         #Botones
-        self.buttonDashboard = tk.Button(self.menu_lateral)
+        self.buttonInicio = tk.Button(self.menu_lateral)
+        self.buttonHogar = tk.Button(self.menu_lateral)
         self.buttonProfile = tk.Button(self.menu_lateral)
         self.buttonPicture = tk.Button(self.menu_lateral)
         self.buttonInfo = tk.Button(self.menu_lateral)
         self.buttonSettings = tk.Button(self.menu_lateral)
         
         buttons_info = [
-            ("Dashboard", self.buttonDashboard),
-            ("Profile", self.buttonProfile),
-            ("Picture", self.buttonPicture),
-            ("Info", self.buttonInfo),
-            ("Settings", self.buttonSettings)
+            ("Inicio", self.buttonInicio,self.inicio),
+            ("Hogar", self.buttonHogar,self.hogar),
+            ("Profile", self.buttonProfile,self.hogar),
+            ("Picture", self.buttonPicture,self.hogar),
+            ("Info", self.buttonInfo,self.hogar),
+            ("Settings", self.buttonSettings,self.hogar)
         ]
         
         #iterar las opciones
-        for text, button in buttons_info:
-            self.configurar_button_menu(button, text, font_awesome, ancho_menu, alto_menu)
+        for text, button, comando in buttons_info:
+            self.configurar_button_menu(button, text, font_awesome, ancho_menu, alto_menu, comando)
     
     def controles_cuerpo(self):
-        #Imagen en el cuerpo principal
         label = tk.Label(self.cuerpo_principal, image=self.logo,
-                         bg=COLOR_CUERPO_PRINCIPAL)
+                        bg=COLOR_CUERPO_PRINCIPAL)
         label.place(x=0, y=0, relwidth=1, relheight=1)
+
+        titulo = tk.Label(self.cuerpo_principal, text="¡BIENVENIDO A SSAFE ZONE!", font=("bold", 16), bg=COLOR_CUERPO_PRINCIPAL)
+        titulo.place(relx=0.5, rely=0.1, anchor='center')
+
         
-    def configurar_button_menu(self, button, text, font_awesome, ancho_menu, alto_menu):
-        button.config(text=f"{text}", anchor="w", font=font_awesome, bd=0, bg=COLOR_MENU_LATERAL, fg="white", width=ancho_menu, height=alto_menu)
+    def configurar_button_menu(self, button, text, font_awesome, ancho_menu, alto_menu, comando):
+        button.config(text=f"{text}", anchor="w", font=font_awesome, bd=0, bg=COLOR_MENU_LATERAL, fg="white", width=ancho_menu, height=alto_menu, command = comando)
         button.pack(side=tk.TOP)
         self.bind_hover_events(button)
     
@@ -140,6 +145,19 @@ class Panel(tk.Tk):
             self.menu_lateral.pack_forget()
         else:
             self.menu_lateral.pack(side=tk.LEFT, fill="y")
+    
+    """ SUBMENU """
+    def inicio(self):
+        self.limpiar_panel(self.cuerpo_principal)
+        self.controles_cuerpo()
+        
+    def hogar(self):
+        self.limpiar_panel(self.cuerpo_principal)
+        HogarDesign(self.cuerpo_principal)
+    
+    def limpiar_panel(self, panel):
+        for widget in panel.winfo_children():
+            widget.destroy()
         
     def run(self):
         self.mainloop()

@@ -26,13 +26,32 @@ locale.setlocale(locale.LC_TIME, 'es_ES.UTF-8')
 
 # Conexión con nuestro BOT
 bot = telebot.TeleBot(TOKEN)
+
+# Carpeta donde se guardan los registros de los tiempos de los mensajes de los usuarios
+CARPETA = "modo_lento"
+# Si no existe la carpeta
+if not os.path.isdir(CARPETA):
+    # Creamos la carpeta
+    os.mkdir(CARPETA)
+
+# Segundos de espera entre cada mensaje de un usuario
+MODO_LENTO = 10
 # Variable global en la que guardaremos los datos del usuario registrado
 usuarios = {}
+# Variable global en la que guardaremos los mensajes del modo lento del chat
+chat_mensajes_modo_lento = {}
 
 # Responde al comando /start y envia el menu de opciones al usuario
 @bot.message_handler(commands=['start'])
 def send_start_command(message):
     #print(message.chat.id)
+    # Si el usuario aún no puede enviar mensajes al bot
+    if usuario_tiene_que_esperar(message.chat.id):
+        # Eliminamos el mensaje enviado por el usuario
+        bot.delete_message(message.chat.id, message.message_id)
+        # Finalizamos la función
+        return
+    
     user = message.from_user # Nombre de usuario en Telegram del cliente
     bot.send_chat_action(message.chat.id, "typing")
     bot.reply_to(message, f'¡Hola {user.first_name}! 👋 Bienvenido a tu bot de seguridad {BOT_USERNAME}.')
@@ -41,14 +60,21 @@ def send_start_command(message):
     markup = types.InlineKeyboardMarkup(row_width=2)
 
     # Creamos los botones y las opciones disponibles del menú
-    btn_activar_alarma = types.InlineKeyboardButton('🚨 Activar alarma 🚨', callback_data='activar_alarma')
-    btn_llamar_policia = types.InlineKeyboardButton('🚓 Llamar a la policia 🚓', callback_data='llamar_policia')
-    btn_monitorear_camara = types.InlineKeyboardButton('📹 Monitorear camara 📹', callback_data='monitorear_camara')
+    btn_activar_alarma = types.InlineKeyboardButton('🟢 Activar alarma 🚨', callback_data='activar_alarma')
+    btn_desactivar_alarma = types.InlineKeyboardButton('🔴 Desactivar alarma 🚨', callback_data='desactivar_alarma')
+    btn_llamar_policia = types.InlineKeyboardButton('🚓 Llamar a la policía 🚓', callback_data='llamar_policia')
+    btn_monitorear_camara = types.InlineKeyboardButton('📹 Monitorear cámara 📹', callback_data='monitorear_camara')
     btn_bloquear_puertas_ventanas = types.InlineKeyboardButton('🔒 Bloquear puertas y ventanas 🔒', callback_data='bloquear_puertas_ventanas')
+    btn_desbloquear_puertas_ventanas = types.InlineKeyboardButton('🔓 Desbloquear puertas y ventanas 🔓', callback_data='desbloquear_puertas_ventanas')
     btn_cerrar = types.InlineKeyboardButton('❌', callback_data='cerrar')
 
     # Agregamos los botones del menú al markup
-    markup.add(btn_activar_alarma, btn_llamar_policia, btn_monitorear_camara, btn_bloquear_puertas_ventanas, btn_cerrar)
+    #markup.add(btn_activar_alarma, btn_desactivar_alarma, btn_llamar_policia, btn_monitorear_camara, btn_bloquear_puertas_ventanas, btn_cerrar)
+    markup.row(btn_activar_alarma, btn_desactivar_alarma)
+    markup.row(btn_llamar_policia, btn_monitorear_camara)
+    markup.row(btn_bloquear_puertas_ventanas)
+    markup.row(btn_desbloquear_puertas_ventanas)
+    markup.row(btn_cerrar)
 
     # Enviar mensaje con los botones
     bot.send_message(message.chat.id, "¿Qué deseas realizar?\n<b>Selecciona una opción:</b>", parse_mode="html", reply_markup=markup)
@@ -78,12 +104,12 @@ def preguntar_contrasena(message):
     bot.register_next_step_handler(mensaje_contrasena, validar_registro)
 
 def validar_registro(message):
-    # Si la contraseña no es mayor a 3 caracteres
-    if not len(message.text) > 3:
+    # Si la contraseña no es mayor a 7 caracteres
+    if not len(message.text) > 7:
         # Informamos del error y volvemos a preguntar
         markup = ForceReply() # Forzamos a que vuelva a respondar el mensaje enviado
         bot.send_chat_action(message.chat.id, "typing")
-        mensaje_error = bot.send_message(message.chat.id, f'🔴 ERROR: Debes escribir al menos 4 caracteres.\nEscribe una contraseña para {nombre_usuario}', reply_markup=markup)
+        mensaje_error = bot.send_message(message.chat.id, f'🔴 ERROR: Debes escribir al menos 8 caracteres.\nEscribe una contraseña para {nombre_usuario}', reply_markup=markup)
         # Volvemos a validar la contraseña llamando a la función
         bot.register_next_step_handler(mensaje_error, validar_registro)
     else: # Si se introdujo la contraseña correctamente
@@ -144,6 +170,13 @@ def guardar_datos_usuario(message):
 # Responde al comando /foto
 @bot.message_handler(commands=['photo'])
 def send_image_command(message):
+    # Si el usuario aún no puede enviar mensajes al bot
+    if usuario_tiene_que_esperar(message.chat.id):
+        # Eliminamos el mensaje enviado por el usuario
+        bot.delete_message(message.chat.id, message.message_id)
+        # Finalizamos la función
+        return
+    
     bot.send_chat_action(message.chat.id, "upload_photo")
     img_url = 'https://static.vecteezy.com/system/resources/previews/020/927/449/original/samsung-brand-logo-phone-symbol-name-white-design-south-korean-mobile-illustration-with-black-background-free-vector.jpg'
     img_path = open("./public/images/samsung.jpg", "rb")
@@ -152,6 +185,13 @@ def send_image_command(message):
 # Responde al comando /document
 @bot.message_handler(commands=['document'])
 def send_document_command(message):
+    # Si el usuario aún no puede enviar mensajes al bot
+    if usuario_tiene_que_esperar(message.chat.id):
+        # Eliminamos el mensaje enviado por el usuario
+        bot.delete_message(message.chat.id, message.message_id)
+        # Finalizamos la función
+        return
+    
     bot.send_chat_action(message.chat.id, "upload_document")
     file = open("./public/docs/Sistema de Seguridad con Raspberry - SAMSUNG.pdf", "rb")
     bot.send_document(chat_id=message.chat.id, document=file, caption="Guía de casos de uso del sistema de seguridad de SSafeZoneBot")
@@ -159,13 +199,27 @@ def send_document_command(message):
 # Responde al comando /help
 @bot.message_handler(commands=['help'])
 def send_help_command(message):
+    # Si el usuario aún no puede enviar mensajes al bot
+    if usuario_tiene_que_esperar(message.chat.id):
+        # Eliminamos el mensaje enviado por el usuario
+        bot.delete_message(message.chat.id, message.message_id)
+        # Finalizamos la función
+        return
+    
     bot.send_chat_action(message.chat.id, "typing")
     bot.reply_to(message, 'Puedes interactuar conmigo usando comandos. Por ahora, solo respondo a /start y /help')
 
 # Responde a los mensajes de texto que no son comandos
 @bot.message_handler(content_types=["text"])
 def send_mensajes_texto(message):
-    # Gestiona los mensajes de texto recibidos
+    """ Gestiona los mensajes de texto recibidos """
+    # Si el usuario aún no puede enviar mensajes al bot
+    if usuario_tiene_que_esperar(message.chat.id):
+        # Eliminamos el mensaje enviado por el usuario
+        bot.delete_message(message.chat.id, message.message_id)
+        # Finalizamos la función
+        return
+
     if message.text.startswith("/"):
         bot.send_chat_action(message.chat.id, "typing")
         mensaje_comando_disponible = bot.send_message(message.chat.id, "Escribe un comando disponible.")
@@ -199,6 +253,13 @@ def send_mensajes_texto(message):
 @bot.message_handler(func=lambda message: True, content_types=['audio', 'photo', 'voice', 'video', 'document', 
                                                                'location', 'contact', 'sticker'])
 def send_default_command(message):
+    # Si el usuario aún no puede enviar mensajes al bot
+    if usuario_tiene_que_esperar(message.chat.id):
+        # Eliminamos el mensaje enviado por el usuario
+        bot.delete_message(message.chat.id, message.message_id)
+        # Finalizamos la función
+        return
+    
     bot.send_chat_action(message.chat.id, "typing")
     mensaje_default = bot.send_message(message.chat.id, "Por ahora, solo recibo mensajes de texto.\nPor favor, usa los comandos que están disponibles en el menú interactivo.")
     time.sleep(5)
@@ -248,6 +309,78 @@ def get_datetime():
 
     return formato_fecha_hora
 
+# Verifica y elimina mensajes después de cierto tiempo (MODO_LENTO)
+def verificar_eliminar_mensajes():
+    while True:
+        """ Itera sobre cada chat en el diccionario 'chat_mensajes_modo_lento'
+        'cid' es el identificador del chat
+        'mensajes_pendientes' es la lista de mensajes pendientes para ese chat """
+        for cid, mensajes_pendientes in chat_mensajes_modo_lento.items():
+            nuevos_mensajes = []
+            """ Itera sobre cada mensaje pendiente en el chat actual
+            'mensaje_id' es el identificador del mensaje
+            'timestamp' es el momento en que se recibió el mensaje """
+            for mensaje_id, timestamp in mensajes_pendientes:
+                # Calcula la cantidad de segundos transcurridos desde que se recibió el mensaje hasta el momento actual
+                segundos_transcurridos = time.time() - timestamp
+                """ Eliminación o conservación de mensajes """
+                # Se conserva el mensaje y se agrega a la lista 'nuevos_mensajes'
+                if segundos_transcurridos < MODO_LENTO:
+                    nuevos_mensajes.append((mensaje_id, timestamp))
+                # Intenta eliminar los mensajes que se encuentran en 'chat_mensajes_modo_lento'
+                else:
+                    try:
+                        bot.delete_message(cid, mensaje_id)
+                    except Exception as e:
+                        print(f"No se pudo eliminar el mensaje {mensaje_id}: {e}")
+            # Después de procesar todos los mensajes pendientes para un chat, 
+            # actualiza la lista de mensajes pendientes para ese chat con la nueva lista 'nuevos_mensajes'
+            chat_mensajes_modo_lento[cid] = nuevos_mensajes
+        time.sleep(1) # Pausa la iteración del bucle un segundo antes de comenzar una nueva iteración
+
+# Comprueba si ha pasado suficiente tiempo desde el último mensaje del usuario
+def usuario_tiene_que_esperar(cid): # Recibe el chat_id
+    """ Si aún no ha pasado suficiente tiempo, muestra en el chat el tiempo que resta y devuelve True.
+    En caso contrario, guarda el timestamp del usuario y devuelve False. """
+
+    def guardar_timestamp(cid):
+        """ Guarda el timestamp actual en el archivo del usuario """
+        with open(f'{CARPETA}/{cid}', "w", encoding="utf-8") as file:
+            file.write(f'{int(time.time())}')
+
+    # Si no existe el archivo del usuario
+    if not os.path.isfile(f'{CARPETA}/{cid}'):
+        # Guardamos el timestamp actual
+        guardar_timestamp(cid)
+        # SI se le permite al usuario mandar mensaje
+        return False
+    # Leemos el timestamp del último mensaje enviado por el usuario al bot
+    with open(f'{CARPETA}/{cid}', "r", encoding="utf-8") as file:
+        # Asignamos a 'timestamp' el valor del tiempo
+        timestamp = int(file.read())
+    # Segundos que han pasado desde el último mensaje
+    segundos = int(time.time()) - timestamp
+    # Si ya ha pasado el tiempo requerido
+    if segundos >= MODO_LENTO:
+        # Guardamos el timestamp actual
+        guardar_timestamp(cid)
+        # SI se le permite al usuario mandar mensaje
+        return False
+    # Si aún no ha pasado el tiempo requerido
+    else:
+        bot.send_chat_action(cid, "typing")
+        # Enviamos un mensaje al usuario indicando el tiempo que resta
+        mensaje_modo_lento = '⚠️ MODO LENTO ACTIVADO\n'
+        mensaje_modo_lento+= f'⌛️ Debes esperar <code>{MODO_LENTO - segundos}</code> segundos para el siguiente mensaje ⌛️\n'
+        mensaje_modo_lento+= f'🟡 Este mensaje será eliminado⌛️⌛️⌛️'
+        mensaje_espera = bot.send_message(cid, mensaje_modo_lento, parse_mode="html")
+
+        # Diccionario 'chat_mensajes_modo_lento' donde cada clave 'cid' tiene una lista de tuplas
+        # Cada tupla representa un mensaje pendiente en el modo lento con su 'message_id' y su 'tiempo'
+        chat_mensajes_modo_lento.setdefault(cid, []).append((mensaje_espera.message_id, time.time()))
+        # NO se le permite al usuario mandar mensaje
+        return True
+
 def recibir_mensajes():
     # Bucle infinito que comprueba si hay nuevos mensajes en el bot
     bot.infinity_polling()
@@ -264,8 +397,12 @@ if __name__ == "__main__":
     ])
     print('Iniciando el bot')
     #bot.polling(none_stop=True)
+    # Hilo [1]: Iniciar el hilo del bot y pueda recibir mensajes
     bot_thread = threading.Thread(name="bot_thread", target=recibir_mensajes)
     bot_thread.start()
+    # Hilo [2]: Iniciar el hilo de verificación y eliminación de mensajes (MODO_LENTO)
+    verify_messages_thread = threading.Thread(name="verify_messages_thread", target=verificar_eliminar_mensajes)
+    verify_messages_thread.start()
     print('Bot iniciado')
 
     # Se notifica al usuario que el bot se encuentra en funcionamiento

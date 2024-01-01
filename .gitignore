@@ -1,6 +1,8 @@
 # Ignora archivos relacionados con credenciales
 .env
 keys.json
+# Ignora archivos relacionados con os del chatbot
+modo_lento/
 # Ignora archivos relacionados con '.pyc'
 tkinter/__pycache__/
 tkinter/forms/login_faceid/__pycache__/

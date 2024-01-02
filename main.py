@@ -100,10 +100,10 @@ def preguntar_contrasena(message):
     markup = ForceReply() # Posiciona como respuesta al mensaje enviado
     bot.send_chat_action(message.chat.id, "typing")
     mensaje_contrasena = bot.send_message(message.chat.id, f'2️⃣ Escribe una contraseña para {nombre_usuario}', reply_markup=markup)
-    # Pasamos al siguiente paso (validar registro) una vez que el usuario escriba su contraseña
-    bot.register_next_step_handler(mensaje_contrasena, validar_registro)
+    # Pasamos al siguiente paso (validar contrasena) una vez que el usuario escriba su contraseña
+    bot.register_next_step_handler(mensaje_contrasena, validar_contrasena)
 
-def validar_registro(message):
+def validar_contrasena(message):
     # Si la contraseña no es mayor a 7 caracteres
     if not len(message.text) > 7:
         # Informamos del error y volvemos a preguntar
@@ -111,10 +111,28 @@ def validar_registro(message):
         bot.send_chat_action(message.chat.id, "typing")
         mensaje_error = bot.send_message(message.chat.id, f'🔴 ERROR: Debes escribir al menos 8 caracteres.\nEscribe una contraseña para {nombre_usuario}', reply_markup=markup)
         # Volvemos a validar la contraseña llamando a la función
-        bot.register_next_step_handler(mensaje_error, validar_registro)
+        bot.register_next_step_handler(mensaje_error, validar_contrasena)
     else: # Si se introdujo la contraseña correctamente
         # Guardamos el 'password' como una key y la respuesta del usuario como el valor
         usuarios[message.chat.id]["password"] = message.text
+        markup = ForceReply() # Posiciona como respuesta al mensaje enviado
+        bot.send_chat_action(message.chat.id, "typing")
+        mensaje_validar_contrasena = bot.send_message(message.chat.id, f'3️⃣ Vuelve a escribir la contraseña para {nombre_usuario}', reply_markup=markup)
+        # Pasamos al siguiente paso (validar registro) una vez que el usuario escriba su contraseña
+        bot.register_next_step_handler(mensaje_validar_contrasena, validar_registro)
+
+def validar_registro(message):
+    # Obtenemos el valor del 'password'
+    password = usuarios[message.chat.id]["password"]
+    # Si la contraseña no coincide con la nueva entrada
+    if password != message.text:
+        # Informamos del error y volvemos a preguntar
+        markup = ForceReply() # Forzamos a que vuelva a respondar el mensaje enviado
+        bot.send_chat_action(message.chat.id, "typing")
+        mensaje_error = bot.send_message(message.chat.id, f'🔴 ERROR: La contraseña no coincide.\nVuelve a escribir la contraseña para {nombre_usuario}', reply_markup=markup)
+        # Volvemos a validar la contraseña llamando a la función
+        bot.register_next_step_handler(mensaje_error, validar_registro)
+    else: # Si las contraseñas coinciden
         # Definimos 2 botones
         markup = ReplyKeyboardMarkup(
             one_time_keyboard=True, 
@@ -125,7 +143,7 @@ def validar_registro(message):
         markup.add("Confirmar registro", "Cancelar registro")
         # Preguntamos por confirmar
         bot.send_chat_action(message.chat.id, "typing")
-        mensaje_botones = bot.send_message(message.chat.id, '3️⃣ ¿Quieres registrar a este usuario con las credenciales proporcionadas?', reply_markup=markup)
+        mensaje_botones = bot.send_message(message.chat.id, '4️⃣ ¿Quieres registrar a este usuario con las credenciales proporcionadas?', reply_markup=markup)
         # Registramos las respuestas en la función indicada
         bot.register_next_step_handler(mensaje_botones, guardar_datos_usuario)
 
@@ -165,6 +183,7 @@ def guardar_datos_usuario(message):
     elif message.text == "Cancelar registro": # Si la respuesta es "Cancelar registro"
         bot.send_chat_action(message.chat.id, "typing")
         markup = ReplyKeyboardRemove() # Elimina la botonera de telegram (ReplyKeyboardMarkup)
+        del usuarios[message.chat.id] # Borramos de memoria el objeto (diccionario) creado
         bot.send_message(message.chat.id, "✅ Registro cancelado exitosamente ✅", parse_mode="html", reply_markup=markup)
 
 # Responde al comando /foto
@@ -407,5 +426,5 @@ if __name__ == "__main__":
 
     # Se notifica al usuario que el bot se encuentra en funcionamiento
     bot.send_message(AXL_CHAT_ID, f'🟢 ¡En estos momentos me encuentro disponible para ti!\nAtentamente: <b>{BOT_USERNAME}</b>', parse_mode="html")
-    bot.send_message(ANGEL_CHAT_ID, f'🟢 ¡En estos momentos me encuentro disponible para ti!\nAtentamente: <b>{BOT_USERNAME}</b>', parse_mode="html")
-    bot.send_message(DANIEL_CHAT_ID, f'🟢 ¡En estos momentos me encuentro disponible para ti!\nAtentamente: <b>{BOT_USERNAME}</b>', parse_mode="html")
+    #bot.send_message(ANGEL_CHAT_ID, f'🟢 ¡En estos momentos me encuentro disponible para ti!\nAtentamente: <b>{BOT_USERNAME}</b>', parse_mode="html")
+    #bot.send_message(DANIEL_CHAT_ID, f'🟢 ¡En estos momentos me encuentro disponible para ti!\nAtentamente: <b>{BOT_USERNAME}</b>', parse_mode="html")

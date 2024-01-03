@@ -77,7 +77,7 @@ def send_start_command(message):
     markup.row(btn_cerrar)
 
     # Enviar mensaje con los botones
-    bot.send_message(message.chat.id, "¿Qué deseas realizar?\n<b>Selecciona una opción:</b>", parse_mode="html", reply_markup=markup)
+    bot.send_message(message.chat.id, "¿Qué deseas realizar? 🤔\n👇 <b>Selecciona una opción:</b> 👇", parse_mode="html", reply_markup=markup)
 
 # Responde al comando /register
 @bot.message_handler(commands=['register'])
@@ -213,7 +213,7 @@ def send_document_command(message):
     
     bot.send_chat_action(message.chat.id, "upload_document")
     file = open("./public/docs/Sistema de Seguridad con Raspberry - SAMSUNG.pdf", "rb")
-    bot.send_document(chat_id=message.chat.id, document=file, caption="Guía de casos de uso del sistema de seguridad de SSafeZoneBot")
+    bot.send_document(chat_id=message.chat.id, document=file, caption="Guía de casos de uso del sistema de seguridad de SSafeZoneBot. 📋")
 
 # Responde al comando /help
 @bot.message_handler(commands=['help'])
@@ -226,7 +226,7 @@ def send_help_command(message):
         return
     
     bot.send_chat_action(message.chat.id, "typing")
-    bot.reply_to(message, 'Puedes interactuar conmigo usando comandos. Por ahora, solo respondo a /start y /help')
+    bot.reply_to(message, 'ℹ️ Puedes interactuar conmigo usando comandos.\nPor ahora, solo respondo a /start, /register, /photo, /document y /help')
 
 # Responde a los mensajes de texto que no son comandos
 @bot.message_handler(content_types=["text"])
@@ -241,28 +241,26 @@ def send_mensajes_texto(message):
 
     if message.text.startswith("/"):
         bot.send_chat_action(message.chat.id, "typing")
-        mensaje_comando_disponible = bot.send_message(message.chat.id, "Escribe un comando disponible.")
-        time.sleep(5)
+        mensaje_comando_disponible = bot.send_message(message.chat.id, "🔴 ERROR: Escribe un comando disponible.")
         bot.send_chat_action(message.chat.id, "typing")
-        mensaje_elimina = bot.send_message(message.chat.id, "Eliminando mensajes invalidos: 3", parse_mode="html")
+        mensaje_elimina = bot.send_message(message.chat.id, "🟡 Eliminando mensajes invalidos: 3⏳⏳⏳", parse_mode="html")
         time.sleep(1)
-        bot.edit_message_text("Eliminando mensajes invalidos: 2", message.chat.id, mensaje_elimina.message_id)
+        bot.edit_message_text("🟡 Eliminando mensajes invalidos: 2⏳⏳⏳", message.chat.id, mensaje_elimina.message_id)
         time.sleep(1)
-        bot.edit_message_text("Eliminando mensajes invalidos: 1", message.chat.id, mensaje_elimina.message_id)
+        bot.edit_message_text("🟡 Eliminando mensajes invalidos: 1⏳⏳⏳", message.chat.id, mensaje_elimina.message_id)
         time.sleep(1)
         bot.delete_message(message.chat.id, message.message_id)
         bot.delete_message(message.chat.id, mensaje_comando_disponible.message_id)
         bot.delete_message(message.chat.id, mensaje_elimina.message_id)
     else:
         bot.send_chat_action(message.chat.id, "typing")
-        mensaje_comando_invalido = bot.send_message(message.chat.id, "Este no es un comando valido. Por favor, escribe un comando valido que inicie con '<b>/</b>'.", parse_mode="html")
-        time.sleep(5)
+        mensaje_comando_invalido = bot.send_message(message.chat.id, "🔴 ERROR: Este no es un comando valido. Por favor, escribe un comando valido que inicie con '<b>/</b>'.", parse_mode="html")
         bot.send_chat_action(message.chat.id, "typing")
-        mensaje_elimina = bot.send_message(message.chat.id, "Eliminando mensajes invalidos: 3", parse_mode="html")
+        mensaje_elimina = bot.send_message(message.chat.id, "🟡 Eliminando mensajes invalidos: 3⏳⏳⏳", parse_mode="html")
         time.sleep(1)
-        bot.edit_message_text("Eliminando mensajes invalidos: 2", message.chat.id, mensaje_elimina.message_id)
+        bot.edit_message_text("🟡 Eliminando mensajes invalidos: 2⏳⏳⏳", message.chat.id, mensaje_elimina.message_id)
         time.sleep(1)
-        bot.edit_message_text("Eliminando mensajes invalidos: 1", message.chat.id, mensaje_elimina.message_id)
+        bot.edit_message_text("🟡 Eliminando mensajes invalidos: 1⏳⏳⏳", message.chat.id, mensaje_elimina.message_id)
         time.sleep(1)
         bot.delete_message(message.chat.id, message.message_id)
         bot.delete_message(message.chat.id, mensaje_comando_invalido.message_id)
@@ -280,14 +278,13 @@ def send_default_command(message):
         return
     
     bot.send_chat_action(message.chat.id, "typing")
-    mensaje_default = bot.send_message(message.chat.id, "Por ahora, solo recibo mensajes de texto.\nPor favor, usa los comandos que están disponibles en el menú interactivo.")
-    time.sleep(5)
+    mensaje_default = bot.send_message(message.chat.id, "🔴 ERROR: Por ahora, solo recibo mensajes de texto.\nPor favor, usa los comandos que están disponibles en el menú interactivo.")
     bot.send_chat_action(message.chat.id, "typing")
-    mensaje_elimina = bot.send_message(message.chat.id, "Eliminando mensajes invalidos: 3", parse_mode="html")
+    mensaje_elimina = bot.send_message(message.chat.id, "🟡 Eliminando mensajes invalidos: 3⏳⏳⏳", parse_mode="html")
     time.sleep(1)
-    bot.edit_message_text("Eliminando mensajes invalidos: 2", message.chat.id, mensaje_elimina.message_id)
+    bot.edit_message_text("🟡 Eliminando mensajes invalidos: 2⏳⏳⏳", message.chat.id, mensaje_elimina.message_id)
     time.sleep(1)
-    bot.edit_message_text("Eliminando mensajes invalidos: 1", message.chat.id, mensaje_elimina.message_id)
+    bot.edit_message_text("🟡 Eliminando mensajes invalidos: 1⏳⏳⏳", message.chat.id, mensaje_elimina.message_id)
     time.sleep(1)
     bot.delete_message(message.chat.id, message.message_id)
     bot.delete_message(message.chat.id, mensaje_default.message_id)
@@ -390,7 +387,7 @@ def usuario_tiene_que_esperar(cid): # Recibe el chat_id
         bot.send_chat_action(cid, "typing")
         # Enviamos un mensaje al usuario indicando el tiempo que resta
         mensaje_modo_lento = '⚠️ MODO LENTO ACTIVADO\n'
-        mensaje_modo_lento+= f'⌛️ Debes esperar <code>{MODO_LENTO - segundos}</code> segundos para el siguiente mensaje ⌛️\n'
+        mensaje_modo_lento+= f'✋ Debes esperar <code>{MODO_LENTO - segundos}</code> segundos para el siguiente mensaje\n'
         mensaje_modo_lento+= f'🟡 Este mensaje será eliminado⌛️⌛️⌛️'
         mensaje_espera = bot.send_message(cid, mensaje_modo_lento, parse_mode="html")
 
@@ -426,5 +423,5 @@ if __name__ == "__main__":
 
     # Se notifica al usuario que el bot se encuentra en funcionamiento
     bot.send_message(AXL_CHAT_ID, f'🟢 ¡En estos momentos me encuentro disponible para ti!\nAtentamente: <b>{BOT_USERNAME}</b>', parse_mode="html")
-    #bot.send_message(ANGEL_CHAT_ID, f'🟢 ¡En estos momentos me encuentro disponible para ti!\nAtentamente: <b>{BOT_USERNAME}</b>', parse_mode="html")
-    #bot.send_message(DANIEL_CHAT_ID, f'🟢 ¡En estos momentos me encuentro disponible para ti!\nAtentamente: <b>{BOT_USERNAME}</b>', parse_mode="html")
+    bot.send_message(ANGEL_CHAT_ID, f'🟢 ¡En estos momentos me encuentro disponible para ti!\nAtentamente: <b>{BOT_USERNAME}</b>', parse_mode="html")
+    bot.send_message(DANIEL_CHAT_ID, f'🟢 ¡En estos momentos me encuentro disponible para ti!\nAtentamente: <b>{BOT_USERNAME}</b>', parse_mode="html")

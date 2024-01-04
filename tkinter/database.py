@@ -103,3 +103,47 @@ def getUserCredentials(nombre, password):
             cursor.close()
             con.close()
     return {"affected": row}
+
+def getUsers():
+    users = []
+
+    try:
+        con = db.connect(host=keys["host"], user=keys["user"], password=keys["password"], port=keys["port"], database=keys["database"])
+        cursor = con.cursor()
+        sql = "SELECT idUser, nombre FROM `user`"  # Seleccionar específicamente el ID y el nombre
+
+        cursor.execute(sql)
+        records = cursor.fetchall()
+
+        for row in records:
+            id_usuario = row[0]
+            nombre_usuario = row[1]
+            users.append((id_usuario, nombre_usuario))  # Agregar una tupla con el ID y el nombre
+    except db.Error as e:
+        print(f"Failed to read image: {e}")
+    finally:
+        if con.is_connected():
+            cursor.close()
+            con.close()
+    return users
+
+def deleteUser(id_usuario):
+    try:
+        print(id_usuario)
+        con = db.connect(host=keys["host"], user=keys["user"], password=keys["password"], port=keys["port"], database=keys["database"])
+        cursor = con.cursor()
+        
+        sql = "DELETE FROM `user` WHERE idUser = %s"
+        cursor.execute(sql, (id_usuario,))
+        
+        con.commit()
+        return True  # Éxito al eliminar el usuario
+
+    except db.Error as e:
+        print(f"Error al eliminar el usuario: {e}")
+        return False  # Fallo al eliminar el usuario
+
+    finally:
+        if con.is_connected():
+            cursor.close()
+            con.close()

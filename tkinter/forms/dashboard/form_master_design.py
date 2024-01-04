@@ -4,6 +4,8 @@ from tkinter.font import BOLD
 from config import COLOR_MENU_CURSOR_ENCIMA, COLOR_CUERPO_PRINCIPAL, COLOR_MENU_LATERAL, COLOR_BARRA_SUPERIOR
 import util.generic as utl
 from forms.dashboard.form_hogar import HogarDesign
+from forms.dashboard.form_graficas import GraficaDesign
+from forms.dashboard.form_acceso import AccesoDesign
 
 class Panel(tk.Tk):
     
@@ -12,7 +14,7 @@ class Panel(tk.Tk):
         #Inicializamos el objeto heredado
         super().__init__()  
         self.username = username
-        print(self.username)
+        #print(self.username)
         #Primero cargamos la imagen   
         self.logo = utl.leer_imagen("./Tkinter/img/familia.jpg", (600, 400))
         self.perfil = utl.leer_imagen("./Tkinter/img/user2.png", (105, 105))
@@ -94,18 +96,16 @@ class Panel(tk.Tk):
         #Botones
         self.buttonInicio = tk.Button(self.menu_lateral)
         self.buttonHogar = tk.Button(self.menu_lateral)
-        self.buttonProfile = tk.Button(self.menu_lateral)
+        self.buttonDashboard = tk.Button(self.menu_lateral)
         self.buttonPicture = tk.Button(self.menu_lateral)
         self.buttonInfo = tk.Button(self.menu_lateral)
         self.buttonSettings = tk.Button(self.menu_lateral)
         
         buttons_info = [
             ("Inicio", self.buttonInicio,self.inicio),
+            ("Dashboard", self.buttonDashboard,self.graficas),
             ("Hogar", self.buttonHogar,self.hogar),
-            ("Profile", self.buttonProfile,self.hogar),
-            ("Picture", self.buttonPicture,self.hogar),
-            ("Info", self.buttonInfo,self.hogar),
-            ("Settings", self.buttonSettings,self.hogar)
+            ("Acceso", self.buttonPicture,self.acceso),
         ]
         
         #iterar las opciones
@@ -146,6 +146,10 @@ class Panel(tk.Tk):
         else:
             self.menu_lateral.pack(side=tk.LEFT, fill="y")
     
+    def limpiar_panel(self, panel):
+        for widget in panel.winfo_children():
+            widget.destroy()
+    
     """ SUBMENU """
     def inicio(self):
         self.limpiar_panel(self.cuerpo_principal)
@@ -154,11 +158,15 @@ class Panel(tk.Tk):
     def hogar(self):
         self.limpiar_panel(self.cuerpo_principal)
         HogarDesign(self.cuerpo_principal)
+         
+    def graficas(self):
+        self.limpiar_panel(self.cuerpo_principal)
+        GraficaDesign(self.cuerpo_principal)
     
-    def limpiar_panel(self, panel):
-        for widget in panel.winfo_children():
-            widget.destroy()
-        
+    def acceso(self):
+        self.limpiar_panel(self.cuerpo_principal)
+        AccesoDesign(self.cuerpo_principal, self.username)
+
     def run(self):
         self.mainloop()
     

@@ -10,6 +10,7 @@ import os
 import database as db
 from tkinter import messagebox as msg
 import hashlib
+import re
 
 class Register(RegisterDesign):
     #Inicializamos todo
@@ -19,6 +20,12 @@ class Register(RegisterDesign):
         #self.path = "C:/Users/axlvi/OneDrive/Escritorio/Axl Coronado/Proyectos_GitHub/SSafeZoneBot/" # axl path
     
     def register_capture(self, nombre, password):
+        # Validar el nombre de usuario y la contraseña
+        if not self.validate_inputs(nombre, password):
+            # Si la validación falla, muestra un mensaje de error y termina la función
+            tk.messagebox.showerror("Error de validación", "Nombre de usuario o contraseña no válidos.")
+            return
+
         cap = cv2.VideoCapture(0)
         user_reg_img = self.usuario.get()
         img = f"{user_reg_img}.jpg"
@@ -33,7 +40,7 @@ class Register(RegisterDesign):
         cap.release()
         cv2.destroyAllWindows()
 
-        # Limpiamos las variables
+        # Limpiar las variables
         self.usuario.delete(0, tk.END)
         self.password.delete(0, tk.END)
         
@@ -55,6 +62,21 @@ class Register(RegisterDesign):
             face = cv2.resize(data[y1:y2, x1:x2],(150,200), interpolation=cv2.INTER_CUBIC)
             cv2.imwrite(img, face)
             plt.imshow(data[y1:y2, x1:x2])
+    
+    def validate_inputs(self, nombre, password):
+        if len(nombre) < 6:
+            tk.messagebox.showerror("Error de validación", "El nombre debe tener al menos 5 caracteres.")
+            return False
+            
+        if not re.match("^[a-zA-Z0-9_]*$", nombre):
+            tk.messagebox.showerror("Error de validación", "El nombre no puede contener caracteres especiales.")
+            return False
+            
+        if len(password) < 8:
+            tk.messagebox.showerror("Error de validación", "La contraseña debe tener al menos 7 caracteres.")
+            return False
+        
+        return True
 
     def register_face_db(self, name_user, password_user, img):
         res_bd = db.registerUser(name_user, password_user, self.path + img)

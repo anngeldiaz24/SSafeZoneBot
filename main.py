@@ -204,9 +204,17 @@ def guardar_datos_usuario(message):
     """ Guardamos los datos introducidos por el usuario """
     # Si la respuesta de los botones no son validas
     if message.text != "Confirmar registro" and message.text != "Cancelar registro":
+        # Definimos 2 botones
+        markup = ReplyKeyboardMarkup(
+            one_time_keyboard=True, 
+            input_field_placeholder="Pulsa un botón",
+            resize_keyboard=True,
+            row_width=2
+            )
+        markup.add("Confirmar registro", "Cancelar registro")
         # Informamos del error y volvemos a preguntar
         bot.send_chat_action(message.chat.id, "typing")
-        mensaje_error = bot.send_message(message.chat.id, '🔴 ERROR: Respuesta no válida.\nPulsa un botón')
+        mensaje_error = bot.send_message(message.chat.id, '🔴 ERROR: Respuesta no válida.\nPulsa un botón', reply_markup=markup)
 
         chat_mensajes_registro[message.chat.id] += [message.message_id] # Almacena el message_id en el chat_id del usuario
 
@@ -223,7 +231,6 @@ def guardar_datos_usuario(message):
         texto = '✅ Registro exitoso ✅\n'
         texto+= 'Datos introducidos:\n'
         texto+= f'<code>NOMBRE DE USUARIO:</code> {usuarios[message.chat.id]["username"]}\n'
-        texto+= f'<code>CONTRASEÑA.......:</code> {usuarios[message.chat.id]["password"]}\n'
         markup = ReplyKeyboardRemove() # Elimina la botonera de telegram (ReplyKeyboardMarkup)
         bot.send_message(message.chat.id, texto, parse_mode="html", reply_markup=markup)
 
@@ -518,4 +525,4 @@ if __name__ == "__main__":
     # Se notifica al usuario que el bot se encuentra en funcionamiento
     bot.send_message(AXL_CHAT_ID, f'🟢 ¡En estos momentos me encuentro disponible para ti!\nAtentamente: <b>{BOT_USERNAME}</b>', parse_mode="html")
     bot.send_message(ANGEL_CHAT_ID, f'🟢 ¡En estos momentos me encuentro disponible para ti!\nAtentamente: <b>{BOT_USERNAME}</b>', parse_mode="html")
-    bot.send_message(DANIEL_CHAT_ID, f'🟢 ¡En estos momentos me encuentro disponible para ti!\nAtentamente: <b>{BOT_USERNAME}</b>', parse_mode="html")
+    #bot.send_message(DANIEL_CHAT_ID, f'🟢 ¡En estos momentos me encuentro disponible para ti!\nAtentamente: <b>{BOT_USERNAME}</b>', parse_mode="html")

@@ -2,8 +2,8 @@
 opencv-python
 matplotlib
 mtcnn
-numpy
 tensorflow
 python-dotenv
 pytelegrambotapi
+telebot
 mysql-connector-python

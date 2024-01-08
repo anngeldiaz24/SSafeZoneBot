@@ -2,7 +2,7 @@
  # Información
 Este proyecto está desarrollado con **Python ^3.11.5**.
 
-Incluye las librerías **TensorFlow** y **OpenCV**.
+Incluye las librerías **TensorFlow**, **OpenCV** y **pyTelegramBotAPI**.
 
 # Instalación
 1. Clonar el proyecto
@@ -30,6 +30,11 @@ Incluye las librerías **TensorFlow** y **OpenCV**.
     ```
     pip install -r requirements.txt
     ```
+    - Nota: En algunos entornos de linux es necesario instalar **TensorFlow** de la siguiente manera
+
+      ```
+      pip install https://storage.googleapis.com/tensorflow/mac/cpu/tensorflow-1.8.0-py3-none-any.whl
+      ```
 
 5. Crear base de datos llamada 'ssafezone' y ejecutar el script sql proporcionado
 
@@ -40,3 +45,13 @@ Incluye las librerías **TensorFlow** y **OpenCV**.
     ```
 
     Modificar contenido de **keys.json**
+
+<!--
+ # Autores y reconocimientos
+ - Angel Díaz
+ - Bryan Axl Coronado Cabrera
+ - Daniel Omar Estrada Ortíz
+ -->
+   
+ # Estado del proyecto
+Este proyecto se encuentra en fase de desarrollo.

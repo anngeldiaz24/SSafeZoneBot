@@ -2,7 +2,6 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter.font import BOLD
 import util.generic as utl
-from forms.master.form_master import MasterPanel
 
 class RegisterDesign:
     
@@ -12,6 +11,7 @@ class RegisterDesign:
     def __init__(self):
         self.ventana = tk.Tk()
         self.ventana.title("Sign Up")
+        self.ventana.iconbitmap("./Tkinter/img/SecurityCamera.ico")
         self.ventana.geometry("800x500")
         self.ventana.config(bg="#FFFFFF")
         self.ventana.resizable(width=0, height=0)
@@ -28,7 +28,7 @@ class RegisterDesign:
         frame_form_top = tk.Frame(
             frame_form, height=50, bd=0, relief=tk.SOLID, bg='#000000')
         frame_form_top.pack(side="top", fill=tk.X)
-        title = tk.Label(frame_form_top, text="Sign Up", font=(
+        title = tk.Label(frame_form_top, text="Crear Nuevo Usuario", font=(
             'Bold', 30), fg="#000000", bg='#fcfcfc', pady=50)
         title.pack(expand=tk.YES, fill=tk.BOTH)
         # end frame_form_top
@@ -60,7 +60,7 @@ class RegisterDesign:
             fg="#fff",
             command=lambda: self.register_capture(self.usuario.get(), self.password.get())
         )
-        inicio.pack(fill=tk.X, padx=20, pady=20)     
+        inicio.pack(fill=tk.X, padx=20, pady=20)   
         
     def run(self):
         self.ventana.mainloop()

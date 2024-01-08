@@ -1,10 +1,3 @@
-from PIL import ImageTk, Image
-
-#lee la imagen
-def leer_imagen( path, size): 
-        return ImageTk.PhotoImage(Image.open(path).resize(size, Image.LANCZOS))  
-    
-#Se coloca al centro de la ventana
 def centrar_ventana(ventana,aplicacion_ancho,aplicacion_largo):    
     pantall_ancho = ventana.winfo_screenwidth()
     pantall_largo = ventana.winfo_screenheight()

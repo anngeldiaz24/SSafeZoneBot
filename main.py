@@ -10,6 +10,7 @@ from telebot.types import ReplyKeyboardMarkup # para crear botones
 from telebot.types import ForceReply # para citar un mensaje
 from telebot.types import ReplyKeyboardRemove # para eliminar botones
 from tkinter.database import registerUserBot # para registrar al usuario desde el bot
+import raspberry.funciones as rp
 
 # Cargar variables de entorno desde el archivo .env
 load_dotenv()
@@ -383,19 +384,34 @@ def callback_query(call):
         bot.send_chat_action(call.message.chat.id, "typing")
         respuesta_alarma = bot.send_message(call.message.chat.id, "Intentando establecer conexión con el sistema...")
         time.sleep(3)
+        rp.activarAlarma()
         bot.edit_message_text("Alarma en curso...", call.message.chat.id, respuesta_alarma.message_id)
+    elif call.data == 'desactivar_alarma':
+        bot.answer_callback_query(call.id, "Se ha enviado la petición para que se desactive la alarma", show_alert=True)
+        bot.send_chat_action(call.message.chat.id, "typing")
+        respuesta_alarma = bot.send_message(call.message.chat.id, "Intentando establecer conexión con el sistema...")
+        time.sleep(3)
+        rp.desactivarAlarma()
+        bot.edit_message_text("Alarma desactivada...", call.message.chat.id, respuesta_alarma.message_id)
     elif call.data == 'llamar_policia':
         bot.send_chat_action(call.message.chat.id, "typing")
         bot.answer_callback_query(call.id, "Se ha enviado la petición para que se establezca la llamada con la policia", show_alert=True)
         respuesta_policia = bot.send_message(call.message.chat.id, "Intentando establecer conexión con el sistema...")
+        rp.llamarPolicia()
         time.sleep(3)
         bot.edit_message_text("Llamada en curso...", call.message.chat.id, respuesta_policia.message_id)
     elif call.data == 'monitorear_camara':
         bot.send_chat_action(call.message.chat.id, "typing")
         bot.answer_callback_query(call.id, "Monitoreando camara...", show_alert=True)
+        rp.monitorearCamara()
     elif call.data == 'bloquear_puertas_ventanas':
         bot.send_chat_action(call.message.chat.id, "typing")
+        rp.cerrarServo()
         bot.answer_callback_query(call.id, "Puertas y ventanas bloqueadas", show_alert=True)
+    elif call.data == 'desbloquear_puertas_ventanas':
+        bot.send_chat_action(call.message.chat.id, "typing")
+        rp.abrirServo()
+        bot.answer_callback_query(call.id, "Puertas y ventanas desbloqueadas", show_alert=True)
     elif call.data == 'cerrar':
         bot.delete_message(call.from_user.id, call.message.id)
         return

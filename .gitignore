@@ -8,6 +8,8 @@ tkinter/__pycache__/
 tkinter/forms/login_faceid/__pycache__/
 tkinter/forms/login_tradicional/__pycache__/
 tkinter/forms/master/__pycache__/
+tkinter/forms/dashboard/__pycache__/
 tkinter/forms/register/__pycache__/
 tkinter/main/__pycache__/
 tkinter/util/__pycache__/
+raspberry/__pycache__/

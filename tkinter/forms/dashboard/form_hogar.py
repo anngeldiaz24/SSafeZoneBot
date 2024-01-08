@@ -2,6 +2,7 @@ import tkinter as tk
 from config import COLOR_CUERPO_PRINCIPAL
 import cv2
 from PIL import Image, ImageTk
+import datetime
 
 class HogarDesign():
     
@@ -24,10 +25,7 @@ class HogarDesign():
         # Label para mostrar el video en el frame del video
         self.label_video = tk.Label(self.frame_video)
         self.label_video.pack()  # Por defecto, se centrará en el frame
-        
-        # Iniciar la transmisión de video
-        self.mostrar_video()
-        
+    
         # Contenedor para los botones 1, 2 y 3
         contenedor_botones1_3 = tk.Frame(self.barra_inferior)
         contenedor_botones1_3.pack(side=tk.LEFT)
@@ -64,6 +62,13 @@ class HogarDesign():
         self.btn6.pack(side=tk.TOP, padx=10, pady=5)
         self.btn6.config(width=20)
 
+        # Iniciar la transmisión de video
+        self.mostrar_video()
+        #Función de capturar la grabación
+        self.grabando = False
+        self.panel = panel_principal
+        
+        
     def mostrar_video(self):
         # Iniciar captura de video desde la cámara
         captura = cv2.VideoCapture(0)  # 0 para la cámara predeterminada
@@ -102,9 +107,34 @@ class HogarDesign():
         pass
     
     def funcion_btn5(self):
-    
-        pass
+        if not self.grabando:
+            self.grabando = True
+            now = datetime.datetime.now()
+            nombre_video = now.strftime("%Y-%m-%d_%H-%M-%S") + '.mp4'
+            self.out = cv2.VideoWriter(nombre_video, cv2.VideoWriter_fourcc(*'mp4v'), 10.0, (650, 350))
 
+            def grabar_video():
+                ret, frame = self.captura.read()
+                if ret:
+                    frame = cv2.resize(frame, (650, 350))
+                    self.out.write(frame)
+                    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                    imagen = Image.fromarray(frame)
+                    imagen = ImageTk.PhotoImage(imagen)
+                    self.label_video.img = imagen
+                    self.label_video.config(image=imagen)
+                if self.grabando:
+                    self.panel.after(100, grabar_video)  # Vuelve a llamar la función si está grabando
+                else:
+                    self.out.release()
+                    self.captura.release() 
+
+            self.captura = cv2.VideoCapture(0)
+            grabar_video()
+        else:
+            self.grabando = False  # Detener la grabación
+            self.mostrar_video()
+            
     def funcion_btn6(self):
         
         pass

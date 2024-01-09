@@ -1,5 +1,6 @@
 import os, time, locale
 import threading # para crear hilos
+import re # para usar expresiones regulares
 from dotenv import load_dotenv # para cargar las variables del .env
 from datetime import datetime # para acceder a la fecha y hora del sistema
 import hashlib # para hashear la contraseña del usuario
@@ -104,26 +105,59 @@ def send_register_command(message):
 
 def preguntar_contrasena(message):
     """ Pregunta la contraseña del usuario a registrar """
-    # Creamos un diccionario dentro del diccionario 'usuarios' propio del usuario que utiliza el comando
-    usuarios[message.chat.id] = {}
-    # Guardamos el 'username' como una key y la respuesta del usuario como el valor
-    usuarios[message.chat.id]["username"] = message.text
-    global nombre_usuario
-    nombre_usuario = message.text
+    # Si el nombre de usuario no es mayor a 4 caracteres
+    if not len(message.text) > 4:
+        # Informamos del error y volvemos a preguntar
+        markup = ForceReply() # Forzamos a que vuelva a respondar el mensaje enviado
+        bot.send_chat_action(message.chat.id, "typing")
+        mensaje_error = bot.send_message(message.chat.id, f'🔴 ERROR: Debes escribir al menos 5 caracteres.\nEscribe un nombre de usuario valido', reply_markup=markup)
+        
+        chat_mensajes_registro[message.chat.id] += [message.message_id] # Almacena el message_id en el chat_id del usuario
 
-    markup = ForceReply() # Posiciona como respuesta al mensaje enviado
-    bot.send_chat_action(message.chat.id, "typing")
-    mensaje_contrasena = bot.send_message(message.chat.id, f'2️⃣ Escribe una contraseña para {nombre_usuario}', reply_markup=markup)
+        # Eliminamos los mensajes que se encuentran en la lista 'chat_mensajes_registro' (hasta ese momento)
+        eliminar_mensajes_registro(message.chat.id, chat_mensajes_registro[message.chat.id])
 
-    chat_mensajes_registro[message.chat.id] += [message.message_id] # Almacena el message_id en el chat_id del usuario
-    
-    # Eliminamos los mensajes que se encuentran en la lista 'chat_mensajes_registro' (hasta ese momento)
-    eliminar_mensajes_registro(message.chat.id, chat_mensajes_registro[message.chat.id])
+        chat_mensajes_registro[message.chat.id] = [mensaje_error.message_id] # Almacena el message_id en el chat_id del usuario
 
-    chat_mensajes_registro[message.chat.id] = [mensaje_contrasena.message_id] # Almacena el message_id en el chat_id del usuario
+        # Volvemos a validar el nombre de usuario llamando a la función
+        bot.register_next_step_handler(mensaje_error, preguntar_contrasena)
+    # Si el nombre de usuario contiene caracteres especiales
+    elif not re.match("^[a-zA-Z0-9_]*$", message.text):
+        # Informamos del error y volvemos a preguntar
+        markup = ForceReply() # Forzamos a que vuelva a respondar el mensaje enviado
+        bot.send_chat_action(message.chat.id, "typing")
+        mensaje_error = bot.send_message(message.chat.id, f'🔴 ERROR: El nombre de usuario no puede contener caracteres especiales.\nEscribe un nombre de usuario valido', reply_markup=markup)
+        
+        chat_mensajes_registro[message.chat.id] += [message.message_id] # Almacena el message_id en el chat_id del usuario
 
-    # Pasamos al siguiente paso (validar contrasena) una vez que el usuario escriba su contraseña
-    bot.register_next_step_handler(mensaje_contrasena, validar_contrasena)
+        # Eliminamos los mensajes que se encuentran en la lista 'chat_mensajes_registro' (hasta ese momento)
+        eliminar_mensajes_registro(message.chat.id, chat_mensajes_registro[message.chat.id])
+
+        chat_mensajes_registro[message.chat.id] = [mensaje_error.message_id] # Almacena el message_id en el chat_id del usuario
+
+        # Volvemos a validar el nombre de usuario llamando a la función
+        bot.register_next_step_handler(mensaje_error, preguntar_contrasena)
+    else:
+        # Creamos un diccionario dentro del diccionario 'usuarios' propio del usuario que utiliza el comando
+        usuarios[message.chat.id] = {}
+        # Guardamos el 'username' como una key y la respuesta del usuario como el valor
+        usuarios[message.chat.id]["username"] = message.text
+        global nombre_usuario
+        nombre_usuario = message.text
+
+        markup = ForceReply() # Posiciona como respuesta al mensaje enviado
+        bot.send_chat_action(message.chat.id, "typing")
+        mensaje_contrasena = bot.send_message(message.chat.id, f'2️⃣ Escribe una contraseña para {nombre_usuario}', reply_markup=markup)
+
+        chat_mensajes_registro[message.chat.id] += [message.message_id] # Almacena el message_id en el chat_id del usuario
+        
+        # Eliminamos los mensajes que se encuentran en la lista 'chat_mensajes_registro' (hasta ese momento)
+        eliminar_mensajes_registro(message.chat.id, chat_mensajes_registro[message.chat.id])
+
+        chat_mensajes_registro[message.chat.id] = [mensaje_contrasena.message_id] # Almacena el message_id en el chat_id del usuario
+
+        # Pasamos al siguiente paso (validar contrasena) una vez que el usuario escriba su contraseña
+        bot.register_next_step_handler(mensaje_contrasena, validar_contrasena)
 
 def validar_contrasena(message):
     # Si la contraseña no es mayor a 7 caracteres

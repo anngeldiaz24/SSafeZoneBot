@@ -10,7 +10,7 @@ from telebot.types import ReplyKeyboardMarkup # para crear botones
 from telebot.types import ForceReply # para citar un mensaje
 from telebot.types import ReplyKeyboardRemove # para eliminar botones
 from tkinter.database import registerUserBot # para registrar al usuario desde el bot
-import raspberry.funciones as rp
+import tkinter.raspberry.funciones as rp
 
 # Cargar variables de entorno desde el archivo .env
 load_dotenv()

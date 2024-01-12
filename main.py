@@ -12,7 +12,8 @@ from telebot.types import ForceReply # para citar un mensaje
 from telebot.types import ReplyKeyboardRemove # para eliminar botones
 from tkinter.database import registerUserBot # para registrar al usuario desde el bot
 from tkinter.database import getUsers # para obtener los usuarios desde el bot
-import raspberry.funciones as rp
+from tkinter.raspberry.llamada_policia import llamarPolicia # para llamar a la policia
+import tkinter.raspberry.funciones as rp # para usar las funciones de la raspberry
 
 # Cargar variables de entorno desde el archivo .env
 load_dotenv()
@@ -470,7 +471,7 @@ def callback_query(call):
         bot.send_chat_action(call.message.chat.id, "typing")
         bot.answer_callback_query(call.id, "Se ha enviado la petición para que se establezca la llamada con la policia", show_alert=True)
         respuesta_policia = bot.send_message(call.message.chat.id, "Intentando establecer conexión con el sistema...")
-        rp.llamarPolicia()
+        llamarPolicia()
         time.sleep(3)
         bot.edit_message_text("Llamada en curso...", call.message.chat.id, respuesta_policia.message_id)
     elif call.data == 'monitorear_camara':

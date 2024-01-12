@@ -7,3 +7,4 @@ python-dotenv
 pytelegrambotapi
 telebot
 mysql-connector-python
+netmiko

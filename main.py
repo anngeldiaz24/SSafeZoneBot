@@ -1,5 +1,6 @@
 import os, time, locale
 import threading # para crear hilos
+import re # para usar expresiones regulares
 from dotenv import load_dotenv # para cargar las variables del .env
 from datetime import datetime # para acceder a la fecha y hora del sistema
 import hashlib # para hashear la contraseña del usuario
@@ -10,7 +11,9 @@ from telebot.types import ReplyKeyboardMarkup # para crear botones
 from telebot.types import ForceReply # para citar un mensaje
 from telebot.types import ReplyKeyboardRemove # para eliminar botones
 from tkinter.database import registerUserBot # para registrar al usuario desde el bot
-import tkinter.raspberry.funciones as rp
+from tkinter.database import getUsers # para obtener los usuarios desde el bot
+from tkinter.raspberry.llamada_policia import llamarPolicia # para llamar a la policia
+import tkinter.raspberry.funciones as rp # para usar las funciones de la raspberry
 
 # Cargar variables de entorno desde el archivo .env
 load_dotenv()
@@ -104,26 +107,59 @@ def send_register_command(message):
 
 def preguntar_contrasena(message):
     """ Pregunta la contraseña del usuario a registrar """
-    # Creamos un diccionario dentro del diccionario 'usuarios' propio del usuario que utiliza el comando
-    usuarios[message.chat.id] = {}
-    # Guardamos el 'username' como una key y la respuesta del usuario como el valor
-    usuarios[message.chat.id]["username"] = message.text
-    global nombre_usuario
-    nombre_usuario = message.text
+    # Si el nombre de usuario no es mayor a 4 caracteres
+    if not len(message.text) > 4:
+        # Informamos del error y volvemos a preguntar
+        markup = ForceReply() # Forzamos a que vuelva a respondar el mensaje enviado
+        bot.send_chat_action(message.chat.id, "typing")
+        mensaje_error = bot.send_message(message.chat.id, f'🔴 ERROR: Debes escribir al menos 5 caracteres.\nEscribe un nombre de usuario valido', reply_markup=markup)
+        
+        chat_mensajes_registro[message.chat.id] += [message.message_id] # Almacena el message_id en el chat_id del usuario
 
-    markup = ForceReply() # Posiciona como respuesta al mensaje enviado
-    bot.send_chat_action(message.chat.id, "typing")
-    mensaje_contrasena = bot.send_message(message.chat.id, f'2️⃣ Escribe una contraseña para {nombre_usuario}', reply_markup=markup)
+        # Eliminamos los mensajes que se encuentran en la lista 'chat_mensajes_registro' (hasta ese momento)
+        eliminar_mensajes_registro(message.chat.id, chat_mensajes_registro[message.chat.id])
 
-    chat_mensajes_registro[message.chat.id] += [message.message_id] # Almacena el message_id en el chat_id del usuario
-    
-    # Eliminamos los mensajes que se encuentran en la lista 'chat_mensajes_registro' (hasta ese momento)
-    eliminar_mensajes_registro(message.chat.id, chat_mensajes_registro[message.chat.id])
+        chat_mensajes_registro[message.chat.id] = [mensaje_error.message_id] # Almacena el message_id en el chat_id del usuario
 
-    chat_mensajes_registro[message.chat.id] = [mensaje_contrasena.message_id] # Almacena el message_id en el chat_id del usuario
+        # Volvemos a validar el nombre de usuario llamando a la función
+        bot.register_next_step_handler(mensaje_error, preguntar_contrasena)
+    # Si el nombre de usuario contiene caracteres especiales
+    elif not re.match("^[a-zA-Z0-9_]*$", message.text):
+        # Informamos del error y volvemos a preguntar
+        markup = ForceReply() # Forzamos a que vuelva a respondar el mensaje enviado
+        bot.send_chat_action(message.chat.id, "typing")
+        mensaje_error = bot.send_message(message.chat.id, f'🔴 ERROR: El nombre de usuario no puede contener caracteres especiales.\nEscribe un nombre de usuario valido', reply_markup=markup)
+        
+        chat_mensajes_registro[message.chat.id] += [message.message_id] # Almacena el message_id en el chat_id del usuario
 
-    # Pasamos al siguiente paso (validar contrasena) una vez que el usuario escriba su contraseña
-    bot.register_next_step_handler(mensaje_contrasena, validar_contrasena)
+        # Eliminamos los mensajes que se encuentran en la lista 'chat_mensajes_registro' (hasta ese momento)
+        eliminar_mensajes_registro(message.chat.id, chat_mensajes_registro[message.chat.id])
+
+        chat_mensajes_registro[message.chat.id] = [mensaje_error.message_id] # Almacena el message_id en el chat_id del usuario
+
+        # Volvemos a validar el nombre de usuario llamando a la función
+        bot.register_next_step_handler(mensaje_error, preguntar_contrasena)
+    else:
+        # Creamos un diccionario dentro del diccionario 'usuarios' propio del usuario que utiliza el comando
+        usuarios[message.chat.id] = {}
+        # Guardamos el 'username' como una key y la respuesta del usuario como el valor
+        usuarios[message.chat.id]["username"] = message.text
+        global nombre_usuario
+        nombre_usuario = message.text
+
+        markup = ForceReply() # Posiciona como respuesta al mensaje enviado
+        bot.send_chat_action(message.chat.id, "typing")
+        mensaje_contrasena = bot.send_message(message.chat.id, f'2️⃣ Escribe una contraseña para {nombre_usuario}', reply_markup=markup)
+
+        chat_mensajes_registro[message.chat.id] += [message.message_id] # Almacena el message_id en el chat_id del usuario
+        
+        # Eliminamos los mensajes que se encuentran en la lista 'chat_mensajes_registro' (hasta ese momento)
+        eliminar_mensajes_registro(message.chat.id, chat_mensajes_registro[message.chat.id])
+
+        chat_mensajes_registro[message.chat.id] = [mensaje_contrasena.message_id] # Almacena el message_id en el chat_id del usuario
+
+        # Pasamos al siguiente paso (validar contrasena) una vez que el usuario escriba su contraseña
+        bot.register_next_step_handler(mensaje_contrasena, validar_contrasena)
 
 def validar_contrasena(message):
     # Si la contraseña no es mayor a 7 caracteres
@@ -272,6 +308,44 @@ def guardar_datos_usuario(message):
         # Modo desarrollador
         print(f"El usuario {message.from_user.id} con nombre de usuario {message.from_user.username} CANCELO un REGISTRO")
 
+# Responde al comando /list_users
+@bot.message_handler(commands=['list_users'])
+def send_list_users_command(message):
+    """ Envia un mensaje al usuario con la lista de usuarios registrados """
+    # Si el usuario aún no puede enviar mensajes al bot
+    if usuario_tiene_que_esperar(message.chat.id):
+        # Eliminamos el mensaje enviado por el usuario
+        bot.delete_message(message.chat.id, message.message_id)
+        # Finalizamos la función
+        return
+    
+    bot.send_chat_action(message.chat.id, "typing")
+    mensaje_estatus = bot.reply_to(message, '🟡 Procesando información⌛️⌛️⌛️')
+    time.sleep(1)
+    
+    users = getUsers() # Obtenemos a los usuarios registrados en la base de datos mediante una lista
+
+    # Si no existen registros en la base de datos
+    if len(users) == 0:
+        bot.send_chat_action(message.chat.id, "typing")
+        bot.edit_message_text('❎ Información procesada insatisfactoriamente ❎', message.chat.id, mensaje_estatus.message_id)
+        # Construimos el mensaje en la variable 'mensaje'
+        mensaje = '⚠️ NO SE HAN ENCONTRADO REGISTROS\n'
+        mensaje += f'🟡 Registra y da de alta a un usuario con el comando ''/register''\n'
+    else: # Si existe al menos un registro en la base de datos
+        bot.send_chat_action(message.chat.id, "typing")
+        bot.edit_message_text('✅ Información procesada con éxito ✅', message.chat.id, mensaje_estatus.message_id)
+        # Construimos el mensaje en la variable 'mensaje'
+        mensaje = '👥 LISTADO DE USUARIOS REGISTRADOS 👥\n\n'
+        mensaje += f'🟢 <code>{len(users)}</code> registros contabilizados\n\n'
+        for user in users:
+            # Se muestra los usuarios registrados en la base de datos
+            mensaje += f'👤 <b>Id:</b> <code>{user[0]}</code>\n'
+            mensaje += f'<b>Nombre de usuario:</b> <code>{user[1]}</code>\n\n'
+
+    bot.send_chat_action(message.chat.id, "typing")
+    bot.send_message(message.chat.id, mensaje, parse_mode="html")
+
 # Responde al comando /foto
 @bot.message_handler(commands=['photo'])
 def send_image_command(message):
@@ -312,7 +386,7 @@ def send_help_command(message):
         return
     
     bot.send_chat_action(message.chat.id, "typing")
-    bot.reply_to(message, 'ℹ️ Puedes interactuar conmigo usando comandos.\nPor ahora, solo respondo a /start, /register, /photo, /document y /help')
+    bot.reply_to(message, 'ℹ️ Puedes interactuar conmigo usando comandos.\nPor ahora, solo respondo a /start, /register, /list_users, /photo, /document y /help')
 
 # Responde a los mensajes de texto que no son comandos
 @bot.message_handler(content_types=["text"])
@@ -397,7 +471,7 @@ def callback_query(call):
         bot.send_chat_action(call.message.chat.id, "typing")
         bot.answer_callback_query(call.id, "Se ha enviado la petición para que se establezca la llamada con la policia", show_alert=True)
         respuesta_policia = bot.send_message(call.message.chat.id, "Intentando establecer conexión con el sistema...")
-        rp.llamarPolicia()
+        llamarPolicia()
         time.sleep(3)
         bot.edit_message_text("Llamada en curso...", call.message.chat.id, respuesta_policia.message_id)
     elif call.data == 'monitorear_camara':
@@ -523,7 +597,8 @@ if __name__ == "__main__":
     # Configuramos los comandos disponibles del bot
     bot.set_my_commands([
         BotCommand("/start", "ve las opciones disponibles que tengo para ti"),
-        BotCommand("/register", "registra a un nuevo usuario"),
+        BotCommand("/register", "registra y da de alta a un nuevo usuario"),
+        BotCommand("/list_users", "muestra los usuarios que están dados de alta en el sistema"),
         BotCommand("/photo", "toma una foto actual de la cámara instalada"),
         BotCommand("/document", "envia la guía de casos de uso del funcionamiento del sistema"),
         BotCommand("/help", "obten más información de los comandos disponibles")
@@ -541,4 +616,4 @@ if __name__ == "__main__":
     # Se notifica al usuario que el bot se encuentra en funcionamiento
     bot.send_message(AXL_CHAT_ID, f'🟢 ¡En estos momentos me encuentro disponible para ti!\nAtentamente: <b>{BOT_USERNAME}</b>', parse_mode="html")
     bot.send_message(ANGEL_CHAT_ID, f'🟢 ¡En estos momentos me encuentro disponible para ti!\nAtentamente: <b>{BOT_USERNAME}</b>', parse_mode="html")
-    #bot.send_message(DANIEL_CHAT_ID, f'🟢 ¡En estos momentos me encuentro disponible para ti!\nAtentamente: <b>{BOT_USERNAME}</b>', parse_mode="html")
+    bot.send_message(DANIEL_CHAT_ID, f'🟢 ¡En estos momentos me encuentro disponible para ti!\nAtentamente: <b>{BOT_USERNAME}</b>', parse_mode="html")

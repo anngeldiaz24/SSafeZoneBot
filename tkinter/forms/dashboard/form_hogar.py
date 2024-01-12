@@ -3,6 +3,9 @@ from config import COLOR_CUERPO_PRINCIPAL
 import cv2
 from PIL import Image, ImageTk
 import datetime
+import os
+import raspberry.funciones as rp
+from raspberry.llamada_policia import llamarPolicia
 
 class HogarDesign():
     
@@ -91,32 +94,35 @@ class HogarDesign():
         actualizar_video()
     
     def funcion_btn1(self):
-        # Acción del botón 1
-        pass
+        rp.activarAlarma()
 
     def funcion_btn2(self):
-        # Acción del botón 2
-        pass
+        llamarPolicia()
     
     def funcion_btn3(self):
-
-        pass
+        rp.desactivarAlarma()
 
     def funcion_btn4(self):
-
-        pass
+        rp.abrirServo()
     
     def funcion_btn5(self):
         if not self.grabando:
             self.grabando = True
             now = datetime.datetime.now()
             nombre_video = now.strftime("%Y-%m-%d_%H-%M-%S") + '.mp4'
-            self.out = cv2.VideoWriter(nombre_video, cv2.VideoWriter_fourcc(*'mp4v'), 10.0, (650, 350))
+            carpeta = 'records'  # Nombre de la carpeta
+            ruta_carpeta = os.path.join(os.getcwd(), carpeta)  # Ruta completa de la carpeta
+            if not os.path.exists(ruta_carpeta):  # Si la carpeta no existe, créala
+                os.makedirs(ruta_carpeta)
+
+            ruta_video = os.path.join(ruta_carpeta, nombre_video)  # Ruta completa del video
+
+            self.out = cv2.VideoWriter(ruta_video, cv2.VideoWriter_fourcc(*'mp4v'), 10.0, (650, 350))
 
             def grabar_video():
                 ret, frame = self.captura.read()
                 if ret:
-                    frame = cv2.resize(frame, (650, 350))
+                    frame = cv2.resize(frame, (650, 350))  # Redimensionar el fotograma
                     self.out.write(frame)
                     frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
                     imagen = Image.fromarray(frame)
@@ -126,15 +132,14 @@ class HogarDesign():
                 if self.grabando:
                     self.panel.after(100, grabar_video)  # Vuelve a llamar la función si está grabando
                 else:
-                    self.out.release()
-                    self.captura.release() 
+                    self.out.release()  # Liberar recursos
+                    self.captura.release()  # Liberar recursos
 
             self.captura = cv2.VideoCapture(0)
             grabar_video()
         else:
             self.grabando = False  # Detener la grabación
             self.mostrar_video()
-            
+                
     def funcion_btn6(self):
-        
-        pass
+        rp.cerrarServo()

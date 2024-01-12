@@ -5,6 +5,7 @@ from PIL import Image, ImageTk
 import datetime
 import os
 import raspberry.funciones as rp
+from raspberry.llamada_policia import llamarPolicia
 
 class HogarDesign():
     
@@ -96,7 +97,7 @@ class HogarDesign():
         rp.activarAlarma()
 
     def funcion_btn2(self):
-        rp.llamarPolicia()
+        llamarPolicia()
     
     def funcion_btn3(self):
         rp.desactivarAlarma()

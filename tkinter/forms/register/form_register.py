@@ -3,9 +3,9 @@ from tkinter import ttk
 from tkinter.font import BOLD
 import util.generic as utl
 from forms.register.form_register_design import RegisterDesign
-import cv2
+#import cv2
 from matplotlib import pyplot as plt
-from mtcnn.mtcnn import MTCNN
+#from mtcnn.mtcnn import MTCNN
 import os
 import database as db
 from tkinter import messagebox as msg

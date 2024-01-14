@@ -18,28 +18,28 @@ def abrirServo():
 
     # Abrir el servo (posicion a 0 grados)
     print("abrirServo funcionando")
-    """ servo1.min()
-    servo2.min()
-    servo3.min()
-    servo4.min()
-    servo5.min()
-    sleep(1) """
+    # servo1.min()
+    # servo2.min()
+    # servo3.min()
+    # servo4.min()
+    # servo5.min()
+    # sleep(1)
 
 def cerrarServo():
     # Cerrar el servo (posicion a 180 grados)
     print("cerrarServo funcionando")
-    """ servo1.max()
-    servo2.max()
-    servo3.max()
-    servo4.max()
-    servo5.max()
-    sleep(1)
- """
+    # servo1.max()
+    # servo2.max()
+    # servo3.max()
+    # servo4.max()
+    # servo5.max()
+    # sleep(1)
+
 # Definir pines
 """ led_rojo = LED(16)
 led_azul = LED(13)
-buzzer = Buzzer(19)
- """
+buzzer = Buzzer(19) """
+
 # Activar la alarma
 def activarAlarma():
     print("activarAlarma funcionando")

@@ -18,7 +18,7 @@ class HogarDesign():
         
         # Título con más espacio en la parte superior
         self.labelTitulo = tk.Label(self.barra_superior, text="PROTEGE TU HOGAR", font=("bold", 16), bg=COLOR_CUERPO_PRINCIPAL)
-        self.labelTitulo.config(pady=30)  # Ajusta pady según tu preferencia
+        self.labelTitulo.config(pady=30)  
         self.labelTitulo.pack(side=tk.TOP, fill='both', expand=True)
 
         # Frame contenedor para el video en la barra superior

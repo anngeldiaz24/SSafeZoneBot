@@ -6,6 +6,7 @@ import util.generic as utl
 from forms.dashboard.form_hogar import HogarDesign
 from forms.dashboard.form_graficas import GraficaDesign
 from forms.dashboard.form_acceso import AccesoDesign
+from forms.dashboard.form_domotica import DomoticaDesign
 
 class Panel(tk.Tk):
     
@@ -97,15 +98,16 @@ class Panel(tk.Tk):
         self.buttonInicio = tk.Button(self.menu_lateral)
         self.buttonHogar = tk.Button(self.menu_lateral)
         self.buttonDashboard = tk.Button(self.menu_lateral)
-        self.buttonPicture = tk.Button(self.menu_lateral)
-        self.buttonInfo = tk.Button(self.menu_lateral)
-        self.buttonSettings = tk.Button(self.menu_lateral)
+        self.buttonHogar = tk.Button(self.menu_lateral)
+        self.buttonAcceso = tk.Button(self.menu_lateral)
+        self.buttonDomotica = tk.Button(self.menu_lateral)
         
         buttons_info = [
             ("Inicio", self.buttonInicio,self.inicio),
             ("Dashboard", self.buttonDashboard,self.graficas),
             ("Hogar", self.buttonHogar,self.hogar),
-            ("Acceso", self.buttonPicture,self.acceso),
+            ("Acceso", self.buttonAcceso,self.acceso),
+            ("Domótica", self.buttonDomotica,self.domotica),
         ]
         
         #iterar las opciones
@@ -166,6 +168,10 @@ class Panel(tk.Tk):
     def acceso(self):
         self.limpiar_panel(self.cuerpo_principal)
         AccesoDesign(self.cuerpo_principal, self.username)
+        
+    def domotica(self):
+        self.limpiar_panel(self.cuerpo_principal)
+        DomoticaDesign(self.cuerpo_principal)
 
     def run(self):
         self.mainloop()

@@ -96,7 +96,7 @@ class AccesoDesign():
 
         # Agregar una imagen al nuevo Frame
         imagen = Image.open("./tkinter/img/familia3.jpg")  
-        imagen = imagen.resize((450, 225), Image.LANCZOS)
+        imagen = imagen.resize((400, 150), Image.LANCZOS)
         imagen = ImageTk.PhotoImage(imagen)
 
         label_imagen = tk.Label(otro_frame, image=imagen, bg=COLOR_CUERPO_PRINCIPAL)

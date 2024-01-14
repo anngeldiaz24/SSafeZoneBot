@@ -45,7 +45,7 @@ class AccesoDesign():
         register.run()
         
     def mostrar_miembros(self):
-        icono_user = Image.open("./Tkinter/img/user3.png")
+        icono_user = Image.open("./tkinter/img/user3.png")
         icono_user = icono_user.resize((20, 20), Image.LANCZOS)
         icono_user = ImageTk.PhotoImage(icono_user)
 
@@ -95,8 +95,8 @@ class AccesoDesign():
         otro_frame.pack(side=tk.LEFT, fill='both', expand=True)
 
         # Agregar una imagen al nuevo Frame
-        imagen = Image.open("./Tkinter/img/familia3.jpg")  
-        imagen = imagen.resize((450, 225), Image.LANCZOS)
+        imagen = Image.open("./tkinter/img/familia3.jpg")  
+        imagen = imagen.resize((400, 150), Image.LANCZOS)
         imagen = ImageTk.PhotoImage(imagen)
 
         label_imagen = tk.Label(otro_frame, image=imagen, bg=COLOR_CUERPO_PRINCIPAL)

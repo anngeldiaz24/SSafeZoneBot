@@ -6,6 +6,7 @@ import util.generic as utl
 from forms.dashboard.form_hogar import HogarDesign
 from forms.dashboard.form_graficas import GraficaDesign
 from forms.dashboard.form_acceso import AccesoDesign
+from forms.dashboard.form_domotica import DomoticaDesign
 
 class Panel(tk.Tk):
     
@@ -16,8 +17,8 @@ class Panel(tk.Tk):
         self.username = username
         #print(self.username)
         #Primero cargamos la imagen   
-        self.logo = utl.leer_imagen("./Tkinter/img/familia.jpg", (600, 400))
-        self.perfil = utl.leer_imagen("./Tkinter/img/user2.png", (105, 105))
+        self.logo = utl.leer_imagen("./tkinter/img/familia.jpg", (600, 400))
+        self.perfil = utl.leer_imagen("./tkinter/img/user2.png", (105, 105))
         self.config_window()
         self.paneles()
         self.controles_barra_superior()
@@ -27,7 +28,7 @@ class Panel(tk.Tk):
     def config_window(self):
         #Configuracion inicial de la ventana                      
         self.title('Samsung Safe Zone Management - Dashboard')
-        self.iconbitmap("./Tkinter/img/SecurityCamera.ico")
+        #self.iconbitmap("./tkinter/img/SecurityCamera.ico")
         w, h = 1024, 600                            
         self.geometry("%dx%d+0+0" % (w, h))
         self.resizable(width=0, height=0) 
@@ -97,15 +98,16 @@ class Panel(tk.Tk):
         self.buttonInicio = tk.Button(self.menu_lateral)
         self.buttonHogar = tk.Button(self.menu_lateral)
         self.buttonDashboard = tk.Button(self.menu_lateral)
-        self.buttonPicture = tk.Button(self.menu_lateral)
-        self.buttonInfo = tk.Button(self.menu_lateral)
-        self.buttonSettings = tk.Button(self.menu_lateral)
+        self.buttonHogar = tk.Button(self.menu_lateral)
+        self.buttonAcceso = tk.Button(self.menu_lateral)
+        self.buttonDomotica = tk.Button(self.menu_lateral)
         
         buttons_info = [
             ("Inicio", self.buttonInicio,self.inicio),
             ("Dashboard", self.buttonDashboard,self.graficas),
             ("Hogar", self.buttonHogar,self.hogar),
-            ("Acceso", self.buttonPicture,self.acceso),
+            ("Acceso", self.buttonAcceso,self.acceso),
+            ("Domótica", self.buttonDomotica,self.domotica),
         ]
         
         #iterar las opciones
@@ -166,6 +168,10 @@ class Panel(tk.Tk):
     def acceso(self):
         self.limpiar_panel(self.cuerpo_principal)
         AccesoDesign(self.cuerpo_principal, self.username)
+        
+    def domotica(self):
+        self.limpiar_panel(self.cuerpo_principal)
+        DomoticaDesign(self.cuerpo_principal)
 
     def run(self):
         self.mainloop()

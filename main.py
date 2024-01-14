@@ -26,7 +26,7 @@ ANGEL_CHAT_ID = os.getenv('ANGEL_CHAT_ID') # Id único de nuestro chat (angel)
 DANIEL_CHAT_ID = os.getenv('DANIEL_CHAT_ID') # Id único de nuestro chat (daniel)
 
 # Configurar el locale para obtener la fecha y hora en español
-locale.setlocale(locale.LC_TIME, 'es_ES.UTF-8')
+#locale.setlocale(locale.LC_TIME, 'es_ES.UTF-8')
 
 # Conexión con nuestro BOT
 bot = telebot.TeleBot(TOKEN)

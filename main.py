@@ -3,7 +3,7 @@ import threading # para crear hilos
 import re # para usar expresiones regulares
 from dotenv import load_dotenv # para cargar las variables del .env
 from datetime import datetime # para acceder a la fecha y hora del sistema
-import hashlib # para ha444444shear la contraseña del usuario
+import hashlib # para hashear la contraseña del usuario
 import telebot # para manejar la API de Telegram
 from telebot import types
 from telebot.types import BotCommand # para crear los comandos del menú de telegram

@@ -588,6 +588,17 @@ def usuario_tiene_que_esperar(cid): # Recibe el chat_id
         # NO se le permite al usuario mandar mensaje
         return True
 
+# Verifica si los sensores de la raspberry activan sus funciones 
+def verificar_movimiento_raspberry():
+    while True:
+        # Si se detecta movimiento en la raspberry
+        if rp.detectar_movimiento():
+            # Se envia una notificación al usuario
+            bot.send_message(1477140980, "🚨🔊 <b>ALERTA</b> 🔊🚨\n<code>¡Se ha detectado movimiento en el hogar!</code>", parse_mode="html")
+            bot.send_message(1136745071, "🚨🔊 <b>ALERTA</b> 🔊🚨\n<code>¡Se ha detectado movimiento en el hogar!</code>", parse_mode="html")
+
+        time.sleep(10)  # Verificar cada 10 segundos
+
 def recibir_mensajes():
     # Bucle infinito que comprueba si hay nuevos mensajes en el bot
     bot.infinity_polling()
@@ -611,9 +622,12 @@ if __name__ == "__main__":
     # Hilo [2]: Iniciar el hilo de verificación y eliminación de mensajes (MODO_LENTO)
     verify_messages_thread = threading.Thread(name="verify_messages_thread", target=verificar_eliminar_mensajes)
     verify_messages_thread.start()
+    # Hilo [3]: Iniciar el hilo de verificación de movimiento de la RASPBERRY
+    verify_movimiento_raspberry_thread = threading.Thread(name="movimiento_thread", target=verificar_movimiento_raspberry)
+    verify_movimiento_raspberry_thread.start()
     print('Bot iniciado')
 
     # Se notifica al usuario que el bot se encuentra en funcionamiento
     bot.send_message(AXL_CHAT_ID, f'🟢 ¡En estos momentos me encuentro disponible para ti!\nAtentamente: <b>{BOT_USERNAME}</b>', parse_mode="html")
-    bot.send_message(ANGEL_CHAT_ID, f'🟢 ¡En estos momentos me encuentro disponible para ti!\nAtentamente: <b>{BOT_USERNAME}</b>', parse_mode="html")
+    #bot.send_message(ANGEL_CHAT_ID, f'🟢 ¡En estos momentos me encuentro disponible para ti!\nAtentamente: <b>{BOT_USERNAME}</b>', parse_mode="html")
     bot.send_message(DANIEL_CHAT_ID, f'🟢 ¡En estos momentos me encuentro disponible para ti!\nAtentamente: <b>{BOT_USERNAME}</b>', parse_mode="html")

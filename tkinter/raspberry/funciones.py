@@ -2,6 +2,20 @@ from gpiozero import Servo, LED, Buzzer
 from gpiozero import MotionSensor, Button
 from time import sleep
 
+movimiento_detectado = False  # Inicialmente, no hay movimiento
+
+# Función que detecta movimiento en el sensor de la raspberry
+def detectar_movimiento():
+    global movimiento_detectado # Variable global para indicar si existe movimiento en la raspberry
+
+    # Si se detecta movimiento
+    if movimiento_detectado:
+        # Retorna true y se asigna a false la variable
+        movimiento_detectado = False
+        return True
+    else: # Si no, retorna false
+        return False
+
  # Configuracion del servo
 """ servo_pin1 = 18
 servo_pin2 =17
@@ -15,15 +29,16 @@ servo4 = Servo(servo_pin4)
 servo5 = Servo(servo_pin5) """
 
 def abrirServo():
-
+    global movimiento_detectado
     # Abrir el servo (posicion a 0 grados)
     print("abrirServo funcionando")
-    """ servo1.min()
-    servo2.min()
-    servo3.min()
-    servo4.min()
-    servo5.min()
-    sleep(1) """
+    movimiento_detectado = True
+    # servo1.min()
+    # servo2.min()
+    # servo3.min()
+    # servo4.min()
+    # servo5.min()
+    # sleep(1)
 
 def cerrarServo():
     # Cerrar el servo (posicion a 180 grados)

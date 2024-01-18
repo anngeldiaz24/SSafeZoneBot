@@ -1,6 +1,6 @@
 import tkinter as tk
 from config import COLOR_CUERPO_PRINCIPAL
-#import cv2
+import cv2
 from PIL import Image, ImageTk
 import datetime
 import os

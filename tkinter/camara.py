@@ -3,7 +3,7 @@ from urllib.request import urlopen
 import numpy as np
  
 #stream = urlopen('http://192.168.100.11:81/stream')
-stream = urlopen('http://10.206.20.33:81/stream')
+stream = urlopen('http://10.206.23.220:81/stream')
 bytes = bytes()
 while True:
     bytes += stream.read(4096)

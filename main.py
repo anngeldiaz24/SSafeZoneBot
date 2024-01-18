@@ -4,6 +4,7 @@ import re # para usar expresiones regulares
 from dotenv import load_dotenv # para cargar las variables del .env
 from datetime import datetime # para acceder a la fecha y hora del sistema
 import hashlib # para hashear la contraseña del usuario
+from concurrent.futures import ThreadPoolExecutor
 import telebot # para manejar la API de Telegram
 from telebot import types
 from telebot.types import BotCommand # para crear los comandos del menú de telegram
@@ -26,7 +27,10 @@ ANGEL_CHAT_ID = os.getenv('ANGEL_CHAT_ID') # Id único de nuestro chat (angel)
 DANIEL_CHAT_ID = os.getenv('DANIEL_CHAT_ID') # Id único de nuestro chat (daniel)
 
 # Configurar el locale para obtener la fecha y hora en español
-#locale.setlocale(locale.LC_TIME, 'es_ES.UTF-8')
+locale.setlocale(locale.LC_TIME, 'es_ES.UTF-8')
+
+# Tupla con los chat id de los administradores del bot
+ADMINISTRADORES = (1477140980,1136745071,1742695268,)
 
 # Conexión con nuestro BOT
 bot = telebot.TeleBot(TOKEN)
@@ -491,6 +495,19 @@ def callback_query(call):
         return
 
 """ FUNCIONES ADICIONALES """
+# Valida si un usuario es administrador
+def es_administrador(cid, informacion=True):
+    """ Devuelve True si el chat id figura en la tupla 'ADMINISTRADORES'
+    y False en caso contrario.
+    Si informacion es True y el usuario no es administrador, se informa en el chat. """
+    if cid in ADMINISTRADORES:
+        return True
+    else:
+        if informacion:
+            print(f'{cid} no esta autorizado')
+            bot.send_message(cid, "🔴 ERROR: No estás autorizado", parse_mode="html")
+        return False
+
 # Obtiene la fecha y hora actual del sistema
 def get_datetime():
     fecha_hora_actual = datetime.now()
@@ -591,13 +608,40 @@ def usuario_tiene_que_esperar(cid): # Recibe el chat_id
 # Verifica si los sensores de la raspberry activan sus funciones 
 def verificar_movimiento_raspberry():
     while True:
+        mensaje_modo_seguro = None
         # Si se detecta movimiento en la raspberry
         if rp.detectar_movimiento():
-            # Se envia una notificación al usuario
-            bot.send_message(1477140980, "🚨🔊 <b>ALERTA</b> 🔊🚨\n<code>¡Se ha detectado movimiento en el hogar!</code>", parse_mode="html")
-            bot.send_message(1136745071, "🚨🔊 <b>ALERTA</b> 🔊🚨\n<code>¡Se ha detectado movimiento en el hogar!</code>", parse_mode="html")
+            for _ in range(5):  # Itera 5 veces, cada iteración representa 10 segundos
+                # Se envía una notificación al usuario
+                for idx, admin_chat_id in enumerate(ADMINISTRADORES, start=1):
+                    print(f'[{idx}] Enviando mensaje a {admin_chat_id}')
+                    bot.send_message(admin_chat_id, "🚨🔊 <b>ALERTA</b> 🔊🚨\n<code>¡Se ha detectado movimiento en el hogar!</code>", parse_mode="html") # Axl
+                print('\n')
 
-        time.sleep(10)  # Verificar cada 10 segundos
+                time.sleep(10)  # Espera 10 segundos entre cada mensaje
+            # Inicializa un diccionario para almacenar los message_id
+            message_ids = {}
+
+            # Enviamos los mensajes a cada administrador y almacenamos los message_id
+            for admin_chat_id in ADMINISTRADORES:
+                mensaje_modo_seguro = bot.send_message(admin_chat_id, "⚠️ <b>ACTIVANDO MODO SEGURO</b> ⚠️\n<code>Encendiendo alarmas</code>🚨🚨🚨", parse_mode="html")
+                message_ids[admin_chat_id] = mensaje_modo_seguro.message_id
+            rp.activarAlarma()
+            time.sleep(5)
+            # Editamos los mensajes utilizando los message_id almacenados
+            for admin_chat_id in ADMINISTRADORES:
+                bot.edit_message_text("⚠️ <b>ACTIVANDO MODO SEGURO</b> ⚠️\n<code>Bloqueando accesos</code>🔒🔒🔒", admin_chat_id, message_ids[admin_chat_id], parse_mode="html")
+            rp.abrirServo()
+            time.sleep(5)
+            for admin_chat_id in ADMINISTRADORES:
+                bot.edit_message_text("⚠️ <b>ACTIVANDO MODO SEGURO</b> ⚠️\n<code>Llamando a la policía</code>🚔🚔🚔", admin_chat_id, message_ids[admin_chat_id], parse_mode="html")
+            rp.llamarPolicia()
+            time.sleep(5)
+            for admin_chat_id in ADMINISTRADORES:
+                bot.edit_message_text("🟢 <b>Modo seguro activado exitosamente</b> 🟢", admin_chat_id, message_ids[admin_chat_id], parse_mode="html")
+        else:
+            time.sleep(10)  # Espera 10 segundos si no hay movimiento antes de volver a verificar
+
 
 def recibir_mensajes():
     # Bucle infinito que comprueba si hay nuevos mensajes en el bot
@@ -629,5 +673,5 @@ if __name__ == "__main__":
 
     # Se notifica al usuario que el bot se encuentra en funcionamiento
     bot.send_message(AXL_CHAT_ID, f'🟢 ¡En estos momentos me encuentro disponible para ti!\nAtentamente: <b>{BOT_USERNAME}</b>', parse_mode="html")
-    #bot.send_message(ANGEL_CHAT_ID, f'🟢 ¡En estos momentos me encuentro disponible para ti!\nAtentamente: <b>{BOT_USERNAME}</b>', parse_mode="html")
+    bot.send_message(ANGEL_CHAT_ID, f'🟢 ¡En estos momentos me encuentro disponible para ti!\nAtentamente: <b>{BOT_USERNAME}</b>', parse_mode="html")
     bot.send_message(DANIEL_CHAT_ID, f'🟢 ¡En estos momentos me encuentro disponible para ti!\nAtentamente: <b>{BOT_USERNAME}</b>', parse_mode="html")

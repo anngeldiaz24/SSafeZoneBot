@@ -4,15 +4,16 @@ from time import sleep
 
 movimiento_detectado = False  # Inicialmente, no hay movimiento
 
+# Función que detecta movimiento en el sensor de la raspberry
 def detectar_movimiento():
-    global movimiento_detectado
-    # Lógica para detectar movimiento en tus sensores
+    global movimiento_detectado # Variable global para indicar si existe movimiento en la raspberry
 
+    # Si se detecta movimiento
     if movimiento_detectado:
-        #notificar_usuario_movimiento()
-        #movimiento_detectado = False
+        # Retorna true y se asigna a false la variable
+        movimiento_detectado = False
         return True
-    else:
+    else: # Si no, retorna false
         return False
 
  # Configuracion del servo

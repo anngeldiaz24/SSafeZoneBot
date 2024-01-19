@@ -16,9 +16,3 @@ def desactivar_pir():
     print("Desactivar el PIR")
     pir.when_motion = lambda: None  # Ignorar eventos de movimiento
     pir.when_no_motion = lambda: None  # Ignorar eventos de no movimiento
-
-# Para probar la activaci�n constante del PIR
-#activar_pir()
-
-# Para probar la desactivaci�n del PIR
-#desactivar_pir()

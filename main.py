@@ -27,7 +27,10 @@ ANGEL_CHAT_ID = os.getenv('ANGEL_CHAT_ID') # Id único de nuestro chat (angel)
 DANIEL_CHAT_ID = os.getenv('DANIEL_CHAT_ID') # Id único de nuestro chat (daniel)
 
 # Configurar el locale para obtener la fecha y hora en español
-locale.setlocale(locale.LC_TIME, 'es_ES.UTF-8')
+#locale.setlocale(locale.LC_TIME, 'es_ES.UTF-8')
+
+# Tupla con los chat id de los administradores del bot
+ADMINISTRADORES = (1477140980,1136745071,1742695268,)
 
 # Tupla con los chat id de los administradores del bot
 ADMINISTRADORES = (1477140980,1136745071,1742695268,)

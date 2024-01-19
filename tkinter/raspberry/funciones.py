@@ -29,7 +29,7 @@ servo2 = Servo(servo_pin2)
 servo3 = Servo(servo_pin3)
 servo4 = Servo(servo_pin4)
 servo5 = Servo(servo_pin5)
-servo6 = Servo(servo_pin6) """
+servo6 = Servo(servo_pin6)
 
 # Definir pines para el sensor de la alarma
 """ led_rojo = LED(16)

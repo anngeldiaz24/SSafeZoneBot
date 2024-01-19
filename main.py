@@ -77,16 +77,21 @@ def send_start_command(message):
     btn_desactivar_alarma = types.InlineKeyboardButton('🔴 Desactivar alarma 🚨', callback_data='desactivar_alarma')
     btn_llamar_policia = types.InlineKeyboardButton('🚓 Llamar a la policía 🚓', callback_data='llamar_policia')
     btn_monitorear_camara = types.InlineKeyboardButton('📹 Monitorear cámara 📹', callback_data='monitorear_camara')
-    btn_bloquear_puertas_ventanas = types.InlineKeyboardButton('🔒 Bloquear puertas y ventanas 🔒', callback_data='bloquear_puertas_ventanas')
-    btn_desbloquear_puertas_ventanas = types.InlineKeyboardButton('🔓 Desbloquear puertas y ventanas 🔓', callback_data='desbloquear_puertas_ventanas')
+    btn_bloquear_accesos = types.InlineKeyboardButton('🔒 Bloquear accesos 🔒', callback_data='bloquear_accesos')
+    btn_desbloquear_accesos = types.InlineKeyboardButton('🔓 Desbloquear accesos 🔓', callback_data='desbloquear_accesos')
+    btn_encender_luces = types.InlineKeyboardButton('🟢 Encender luces 💡', callback_data='encender_luces')
+    btn_apagar_luces = types.InlineKeyboardButton('🔴 Apagar luces 💡', callback_data='apagar_luces')
+    btn_activar_modo_seguro = types.InlineKeyboardButton('🔓 Activar modo seguro 🔓', callback_data='activar_modo_seguro')
+    btn_desactivar_modo_seguro = types.InlineKeyboardButton('🔓 Desactivar modo seguro 🔓', callback_data='desactivar_modo_seguro')
     btn_cerrar = types.InlineKeyboardButton('❌', callback_data='cerrar')
 
     # Agregamos los botones del menú al markup
-    #markup.add(btn_activar_alarma, btn_desactivar_alarma, btn_llamar_policia, btn_monitorear_camara, btn_bloquear_puertas_ventanas, btn_cerrar)
+    #markup.add(btn_activar_alarma, btn_desactivar_alarma, btn_llamar_policia, btn_monitorear_camara, btn_bloquear_accesos, btn_desbloquear_accesos, btn_cerrar)
+    markup.row(btn_encender_luces, btn_apagar_luces)
     markup.row(btn_activar_alarma, btn_desactivar_alarma)
     markup.row(btn_llamar_policia, btn_monitorear_camara)
-    markup.row(btn_bloquear_puertas_ventanas)
-    markup.row(btn_desbloquear_puertas_ventanas)
+    markup.row(btn_bloquear_accesos, btn_desbloquear_accesos)
+    markup.row(btn_activar_modo_seguro, btn_desactivar_modo_seguro)
     markup.row(btn_cerrar)
 
     # Enviar mensaje con los botones
@@ -482,14 +487,42 @@ def callback_query(call):
         bot.send_chat_action(call.message.chat.id, "typing")
         bot.answer_callback_query(call.id, "Monitoreando camara...", show_alert=True)
         rp.monitorearCamara()
-    elif call.data == 'bloquear_puertas_ventanas':
+    elif call.data == 'bloquear_accesos':
         bot.send_chat_action(call.message.chat.id, "typing")
         rp.cerrarServo()
         bot.answer_callback_query(call.id, "Puertas y ventanas bloqueadas", show_alert=True)
-    elif call.data == 'desbloquear_puertas_ventanas':
+    elif call.data == 'desbloquear_accesos':
         bot.send_chat_action(call.message.chat.id, "typing")
         rp.abrirServo()
         bot.answer_callback_query(call.id, "Puertas y ventanas desbloqueadas", show_alert=True)
+    elif call.data == 'activar_modo_seguro':
+        bot.send_chat_action(call.message.chat.id, "typing")
+        bot.answer_callback_query(call.id, "Se ha enviado la petición para que se establezca el modo seguro", show_alert=True)
+        modo_seguro = bot.send_message(call.message.chat.id, "Intentando establecer conexión con el sistema...")
+        rp.activarSensorMovimiento()
+        time.sleep(3)
+        bot.edit_message_text("Modo seguro activado...", call.message.chat.id, modo_seguro.message_id)
+    elif call.data == 'desactivar_modo_seguro':
+        bot.send_chat_action(call.message.chat.id, "typing")
+        bot.answer_callback_query(call.id, "Se ha enviado la petición para que se desactive el modo seguro", show_alert=True)
+        modo_seguro = bot.send_message(call.message.chat.id, "Intentando establecer conexión con el sistema...")
+        rp.desactivarSensorMovimiento()
+        time.sleep(3)
+        bot.edit_message_text("Modo seguro desactivado...", call.message.chat.id, modo_seguro.message_id)
+    elif call.data == 'encender_luces':
+        bot.send_chat_action(call.message.chat.id, "typing")
+        bot.answer_callback_query(call.id, "Se ha enviado la petición para que se enciendan las luces", show_alert=True)
+        modo_seguro = bot.send_message(call.message.chat.id, "Intentando establecer conexión con el sistema...")
+        rp.encenderLucesDomesticas()
+        time.sleep(3)
+        bot.edit_message_text("Luces encendidas...", call.message.chat.id, modo_seguro.message_id)
+    elif call.data == 'apagar_luces':
+        bot.send_chat_action(call.message.chat.id, "typing")
+        bot.answer_callback_query(call.id, "Se ha enviado la petición para que se apaguen las luces", show_alert=True)
+        modo_seguro = bot.send_message(call.message.chat.id, "Intentando establecer conexión con el sistema...")
+        rp.apagarLucesDomesticas()
+        time.sleep(3)
+        bot.edit_message_text("Luces apagadas...", call.message.chat.id, modo_seguro.message_id)
     elif call.data == 'cerrar':
         bot.delete_message(call.from_user.id, call.message.id)
         return
@@ -606,7 +639,7 @@ def usuario_tiene_que_esperar(cid): # Recibe el chat_id
         return True
 
 # Verifica si los sensores de la raspberry activan sus funciones 
-def verificar_movimiento_raspberry():
+def activar_modo_seguro():
     while True:
         mensaje_modo_seguro = None
         # Si se detecta movimiento en la raspberry
@@ -635,7 +668,7 @@ def verificar_movimiento_raspberry():
             time.sleep(5)
             for admin_chat_id in ADMINISTRADORES:
                 bot.edit_message_text("⚠️ <b>ACTIVANDO MODO SEGURO</b> ⚠️\n<code>Llamando a la policía</code>🚔🚔🚔", admin_chat_id, message_ids[admin_chat_id], parse_mode="html")
-            rp.llamarPolicia()
+            llamarPolicia()
             time.sleep(5)
             for admin_chat_id in ADMINISTRADORES:
                 bot.edit_message_text("🟢 <b>Modo seguro activado exitosamente</b> 🟢", admin_chat_id, message_ids[admin_chat_id], parse_mode="html")
@@ -667,7 +700,7 @@ if __name__ == "__main__":
     verify_messages_thread = threading.Thread(name="verify_messages_thread", target=verificar_eliminar_mensajes)
     verify_messages_thread.start()
     # Hilo [3]: Iniciar el hilo de verificación de movimiento de la RASPBERRY
-    verify_movimiento_raspberry_thread = threading.Thread(name="movimiento_thread", target=verificar_movimiento_raspberry)
+    verify_movimiento_raspberry_thread = threading.Thread(name="movimiento_thread", target=activar_modo_seguro)
     verify_movimiento_raspberry_thread.start()
     print('Bot iniciado')
 

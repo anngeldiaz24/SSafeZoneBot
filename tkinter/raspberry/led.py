@@ -1,22 +1,22 @@
 from gpiozero import Button, LED
 
-# Configurar los pines (ajusta los n�meros de pin seg�n tu configuraci�n)
+# Configurar los pines (ajusta los numeros de pin segun tu configuracion)
 boton = Button(25)
 led = LED(16)
 
-# Funci�n para activar el LED cuando se presiona el bot�n
+# Funcion para activar el LED cuando se presiona el boton
 def encender_led():
     led.on()
 
-# Funci�n para apagar el LED cuando se suelta el bot�n
+# Funcion para apagar el LED cuando se suelta el boton
 def apagar_led():
     led.off()
 
-# Configurar las acciones del bot�n
+# Configurar las acciones del boton
 boton.when_pressed = encender_led
 boton.when_released = apagar_led
 
-# Mantener el programa en ejecuci�n
+# Mantener el programa en ejecucion
 try:
     while True:
         pass

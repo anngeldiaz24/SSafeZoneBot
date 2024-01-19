@@ -4,12 +4,15 @@ import cv2
 from PIL import Image, ImageTk
 import datetime
 import os
+from urllib.request import urlopen
+import numpy as np
 import raspberry.funciones as rp
 from raspberry.llamada_policia import llamarPolicia
 
 class HogarDesign():
     
     def __init__(self, panel_principal):
+
         self.barra_superior = tk.Frame(panel_principal, bg=COLOR_CUERPO_PRINCIPAL)
         self.barra_superior.pack(side=tk.TOP, fill=tk.X, expand=False)
         
@@ -91,7 +94,40 @@ class HogarDesign():
             # Actualizar el video después de un breve tiempo
             self.label_video.after(10, actualizar_video)
 
-        actualizar_video()
+        actualizar_video() 
+    
+    """ def mostrar_video(self):
+        #Descomentar cuando se utilice la raspberry
+        # Iniciar la transmisión desde la URL
+        stream = urlopen('http://10.206.23.220:81/stream')
+        video_bytes = b""  # Cambiado el nombre de la variable para evitar conflictos
+
+        def actualizar_video():
+            nonlocal video_bytes  # Usamos nonlocal para referenciar la variable externa
+            video_bytes += stream.read(4096)
+            a = video_bytes.find(b'\xff\xd8')
+            b = video_bytes.find(b'\xff\xd9')
+
+            if a != -1 and b != -1:
+                jpg = video_bytes[a:b+2]
+                video_bytes = video_bytes[b+2:]
+                if jpg:
+                    img = cv2.imdecode(np.frombuffer(jpg, dtype=np.uint8), cv2.IMREAD_COLOR)
+                    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+                    img = cv2.resize(img, (650, 350))  # Redimensionar el fotograma
+                    imagen = Image.fromarray(img)
+                    imagen = ImageTk.PhotoImage(imagen)
+
+                    # Mostrar el video en el label dentro del frame de video
+                    self.label_video.img = imagen
+                    self.label_video.config(image=imagen)
+
+            # Actualizar el video después de un breve tiempo
+            self.label_video.after(10, actualizar_video)
+
+        # Llamada inicial a la función de actualización
+        actualizar_video() """
+
     
     def funcion_btn1(self):
         rp.activarAlarma()
@@ -140,6 +176,8 @@ class HogarDesign():
         else:
             self.grabando = False  # Detener la grabación
             self.mostrar_video()
-                
+                 
+
+
     def funcion_btn6(self):
         rp.cerrarServo()

@@ -73,16 +73,16 @@ def send_start_command(message):
     markup = types.InlineKeyboardMarkup(row_width=2)
 
     # Creamos los botones y las opciones disponibles del menú
-    btn_activar_alarma = types.InlineKeyboardButton('🟢 Activar alarma 🚨', callback_data='activar_alarma')
-    btn_desactivar_alarma = types.InlineKeyboardButton('🔴 Desactivar alarma 🚨', callback_data='desactivar_alarma')
+    btn_activar_alarma = types.InlineKeyboardButton('🚨 Activar alarma 🟢', callback_data='activar_alarma')
+    btn_desactivar_alarma = types.InlineKeyboardButton('🚨 Desactivar alarma 🔴', callback_data='desactivar_alarma')
     btn_llamar_policia = types.InlineKeyboardButton('🚓 Llamar a la policía 🚓', callback_data='llamar_policia')
     btn_monitorear_camara = types.InlineKeyboardButton('📹 Monitorear cámara 📹', callback_data='monitorear_camara')
     btn_bloquear_accesos = types.InlineKeyboardButton('🔒 Bloquear accesos 🔒', callback_data='bloquear_accesos')
     btn_desbloquear_accesos = types.InlineKeyboardButton('🔓 Desbloquear accesos 🔓', callback_data='desbloquear_accesos')
-    btn_encender_luces = types.InlineKeyboardButton('🟢 Encender luces 💡', callback_data='encender_luces')
-    btn_apagar_luces = types.InlineKeyboardButton('🔴 Apagar luces 💡', callback_data='apagar_luces')
-    btn_activar_modo_seguro = types.InlineKeyboardButton('🔓 Activar modo seguro 🔓', callback_data='activar_modo_seguro')
-    btn_desactivar_modo_seguro = types.InlineKeyboardButton('🔓 Desactivar modo seguro 🔓', callback_data='desactivar_modo_seguro')
+    btn_encender_luces = types.InlineKeyboardButton('💡 Encender luces 🟢', callback_data='encender_luces')
+    btn_apagar_luces = types.InlineKeyboardButton('💡 Apagar luces 🔴', callback_data='apagar_luces')
+    btn_activar_modo_seguro = types.InlineKeyboardButton('🔒 Activar modo seguro 🟢', callback_data='activar_modo_seguro')
+    btn_desactivar_modo_seguro = types.InlineKeyboardButton('🔓 Desactivar modo seguro 🔴', callback_data='desactivar_modo_seguro')
     btn_cerrar = types.InlineKeyboardButton('❌', callback_data='cerrar')
 
     # Agregamos los botones del menú al markup
@@ -485,8 +485,11 @@ def callback_query(call):
         bot.edit_message_text("Llamada en curso...", call.message.chat.id, respuesta_policia.message_id)
     elif call.data == 'monitorear_camara':
         bot.send_chat_action(call.message.chat.id, "typing")
-        bot.answer_callback_query(call.id, "Monitoreando camara...", show_alert=True)
+        bot.answer_callback_query(call.id, "Se enviará un link para que se pueda monitorear la cámara", show_alert=True)
+        respuesta_camara = bot.send_message(call.message.chat.id, "Intentando establecer conexión con el sistema...")
         rp.monitorearCamara()
+        time.sleep(3)
+        bot.edit_message_text('<a href="http://10.206.23.220:81/stream">Haga click aquí para monitorear la cámara</a>', call.message.chat.id, respuesta_camara.message_id, parse_mode="html")
     elif call.data == 'bloquear_accesos':
         bot.send_chat_action(call.message.chat.id, "typing")
         rp.cerrarServo()
@@ -495,20 +498,6 @@ def callback_query(call):
         bot.send_chat_action(call.message.chat.id, "typing")
         rp.abrirServo()
         bot.answer_callback_query(call.id, "Puertas y ventanas desbloqueadas", show_alert=True)
-    elif call.data == 'activar_modo_seguro':
-        bot.send_chat_action(call.message.chat.id, "typing")
-        bot.answer_callback_query(call.id, "Se ha enviado la petición para que se establezca el modo seguro", show_alert=True)
-        modo_seguro = bot.send_message(call.message.chat.id, "Intentando establecer conexión con el sistema...")
-        rp.activarSensorMovimiento()
-        time.sleep(3)
-        bot.edit_message_text("Modo seguro activado...", call.message.chat.id, modo_seguro.message_id)
-    elif call.data == 'desactivar_modo_seguro':
-        bot.send_chat_action(call.message.chat.id, "typing")
-        bot.answer_callback_query(call.id, "Se ha enviado la petición para que se desactive el modo seguro", show_alert=True)
-        modo_seguro = bot.send_message(call.message.chat.id, "Intentando establecer conexión con el sistema...")
-        rp.desactivarSensorMovimiento()
-        time.sleep(3)
-        bot.edit_message_text("Modo seguro desactivado...", call.message.chat.id, modo_seguro.message_id)
     elif call.data == 'encender_luces':
         bot.send_chat_action(call.message.chat.id, "typing")
         bot.answer_callback_query(call.id, "Se ha enviado la petición para que se enciendan las luces", show_alert=True)
@@ -523,6 +512,20 @@ def callback_query(call):
         rp.apagarLucesDomesticas()
         time.sleep(3)
         bot.edit_message_text("Luces apagadas...", call.message.chat.id, modo_seguro.message_id)
+    elif call.data == 'activar_modo_seguro':
+        bot.send_chat_action(call.message.chat.id, "typing")
+        bot.answer_callback_query(call.id, "Se ha enviado la petición para que se establezca el modo seguro", show_alert=True)
+        modo_seguro = bot.send_message(call.message.chat.id, "Intentando establecer conexión con el sistema...")
+        rp.activarSensorMovimiento()
+        time.sleep(3)
+        bot.edit_message_text("Modo seguro activado...", call.message.chat.id, modo_seguro.message_id)
+    elif call.data == 'desactivar_modo_seguro':
+        bot.send_chat_action(call.message.chat.id, "typing")
+        bot.answer_callback_query(call.id, "Se ha enviado la petición para que se desactive el modo seguro", show_alert=True)
+        modo_seguro = bot.send_message(call.message.chat.id, "Intentando establecer conexión con el sistema...")
+        rp.desactivarSensorMovimiento()
+        time.sleep(3)
+        bot.edit_message_text("Modo seguro desactivado...", call.message.chat.id, modo_seguro.message_id)
     elif call.data == 'cerrar':
         bot.delete_message(call.from_user.id, call.message.id)
         return
@@ -644,14 +647,14 @@ def activar_modo_seguro():
         mensaje_modo_seguro = None
         # Si se detecta movimiento en la raspberry
         if rp.detectar_movimiento():
-            for _ in range(5):  # Itera 5 veces, cada iteración representa 10 segundos
+            for _ in range(2):  # Itera 5 veces, cada iteración representa 10 segundos
                 # Se envía una notificación al usuario
                 for idx, admin_chat_id in enumerate(ADMINISTRADORES, start=1):
                     print(f'[{idx}] Enviando mensaje a {admin_chat_id}')
                     bot.send_message(admin_chat_id, "🚨🔊 <b>ALERTA</b> 🔊🚨\n<code>¡Se ha detectado movimiento en el hogar!</code>", parse_mode="html") # Axl
                 print('\n')
 
-                time.sleep(10)  # Espera 10 segundos entre cada mensaje
+                time.sleep(3)  # Espera 10 segundos entre cada mensaje
             # Inicializa un diccionario para almacenar los message_id
             message_ids = {}
 
@@ -660,16 +663,16 @@ def activar_modo_seguro():
                 mensaje_modo_seguro = bot.send_message(admin_chat_id, "⚠️ <b>ACTIVANDO MODO SEGURO</b> ⚠️\n<code>Encendiendo alarmas</code>🚨🚨🚨", parse_mode="html")
                 message_ids[admin_chat_id] = mensaje_modo_seguro.message_id
             rp.activarAlarma()
-            time.sleep(5)
+            #time.sleep(5)
             # Editamos los mensajes utilizando los message_id almacenados
             for admin_chat_id in ADMINISTRADORES:
                 bot.edit_message_text("⚠️ <b>ACTIVANDO MODO SEGURO</b> ⚠️\n<code>Bloqueando accesos</code>🔒🔒🔒", admin_chat_id, message_ids[admin_chat_id], parse_mode="html")
             rp.abrirServo()
-            time.sleep(5)
+            #time.sleep(5)
             for admin_chat_id in ADMINISTRADORES:
                 bot.edit_message_text("⚠️ <b>ACTIVANDO MODO SEGURO</b> ⚠️\n<code>Llamando a la policía</code>🚔🚔🚔", admin_chat_id, message_ids[admin_chat_id], parse_mode="html")
             llamarPolicia()
-            time.sleep(5)
+            #time.sleep(5)
             for admin_chat_id in ADMINISTRADORES:
                 bot.edit_message_text("🟢 <b>Modo seguro activado exitosamente</b> 🟢", admin_chat_id, message_ids[admin_chat_id], parse_mode="html")
         else:
@@ -692,7 +695,7 @@ if __name__ == "__main__":
         BotCommand("/help", "obten más información de los comandos disponibles")
     ])
     print('Iniciando el bot')
-    #bot.polling(none_stop=True)
+    # bot.polling(none_stop=True)
     # Hilo [1]: Iniciar el hilo del bot y pueda recibir mensajes
     bot_thread = threading.Thread(name="bot_thread", target=recibir_mensajes)
     bot_thread.start()

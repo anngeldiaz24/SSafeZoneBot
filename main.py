@@ -667,11 +667,12 @@ def activar_modo_seguro():
             # Editamos los mensajes utilizando los message_id almacenados
             for admin_chat_id in ADMINISTRADORES:
                 bot.edit_message_text("⚠️ <b>ACTIVANDO MODO SEGURO</b> ⚠️\n<code>Bloqueando accesos</code>🔒🔒🔒", admin_chat_id, message_ids[admin_chat_id], parse_mode="html")
-            rp.abrirServo()
+            rp.cerrarServo()
             #time.sleep(5)
             for admin_chat_id in ADMINISTRADORES:
                 bot.edit_message_text("⚠️ <b>ACTIVANDO MODO SEGURO</b> ⚠️\n<code>Llamando a la policía</code>🚔🚔🚔", admin_chat_id, message_ids[admin_chat_id], parse_mode="html")
-            llamarPolicia()
+            # llamarPolicia()
+            rp.luzAlarma()
             #time.sleep(5)
             for admin_chat_id in ADMINISTRADORES:
                 bot.edit_message_text("🟢 <b>Modo seguro activado exitosamente</b> 🟢", admin_chat_id, message_ids[admin_chat_id], parse_mode="html")

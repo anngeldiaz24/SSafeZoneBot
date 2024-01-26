@@ -18,7 +18,7 @@ def detectar_movimiento():
         return False
 
  # Configuracion del servo
-""" servo_pin1 = 18
+servo_pin1 = 18
 servo_pin2 =17
 servo_pin3 = 20
 servo_pin4 =21
@@ -29,43 +29,43 @@ servo2 = Servo(servo_pin2)
 servo3 = Servo(servo_pin3)
 servo4 = Servo(servo_pin4)
 servo5 = Servo(servo_pin5)
-servo6 = Servo(servo_pin6) """
+servo6 = Servo(servo_pin6)
 
 # Definir pines para el sensor de la alarma
-""" led_rojo = LED(16)
+led_rojo = LED(16)
 led_azul = LED(13)
-buzzer = Buzzer(19) """
+buzzer = Buzzer(19)
 
 # Configurar el LED en el pin 25
-# led = LED(25)
+led = LED(25)
 
 def abrirServo():
     # Abrir el servo (posicion a 0 grados)
     print("abrirServo funcionando")
     
-    # servo1.min()
-    # servo2.min()
-    # servo3.min()
-    # servo4.max()
-    # servo5.max()
-    # servo6.max()
-    # sleep(1)
+    servo1.min()
+    servo2.min()
+    servo3.min()
+    servo4.max()
+    servo5.max()
+    servo6.max()
+    sleep(1)
 
 def cerrarServo():
     # Cerrar el servo (posicion a 180 grados)
     print("cerrarServo funcionando")
-    # servo1.max()
-    # servo2.max()
-    # servo3.max()
-    # servo4.min()
-    # servo5.min()
-    # servo6.min()
-    # sleep(1)
+    servo1.max()
+    servo2.max()
+    servo3.max()
+    servo4.min()
+    servo5.min()
+    servo6.min()
+    sleep(1)
 
 # Activar la alarma
 def activarAlarma():
     print("activarAlarma funcionando")
-    """  tiempo_total = 10  
+    tiempo_total = 10  
     tiempo_parpeo = 0.5  
 
     # Bucle para parpadear
@@ -79,13 +79,13 @@ def activarAlarma():
         led_azul.off()
         
         buzzer.toggle()  # Buzzer prendido y apagado
-        tiempo_total -= tiempo_parpeo * 2  # Tiempo de parpadeos """
+        tiempo_total -= tiempo_parpeo * 2  # Tiempo de parpadeos
 
 def desactivarAlarma():
     print("desactivarAlarma funcionando")
-    """ led_rojo.off()
+    led_rojo.off()
     led_azul.off()
-    buzzer.off() """
+    buzzer.off()
 
 def monitorearCamara():
     print("monitorearCamara funcionando")
@@ -93,8 +93,7 @@ def monitorearCamara():
 def activarSensorMovimiento():
     global movimiento_detectado
     print("activarSensorMovimiento funcionando")
-    luzAlarma()
-    """ pir = MotionSensor(4)
+    pir = MotionSensor(4)
     print("Esperar el PIR")
     pir.wait_for_no_motion()
     while True:
@@ -102,46 +101,36 @@ def activarSensorMovimiento():
         pir.wait_for_motion()
         print("Movimiento detectado")
         movimiento_detectado = True
-        time.sleep(1) """
-    
-    print("Esperar el PIR")
-    while True:
-        print("Listo")
-        print("Movimiento detectado")
-        movimiento_detectado = True
-        time.sleep(1)
+        time.sleep(5)
         break
 
 def desactivarSensorMovimiento():
     global movimiento_detectado
     print("desactivarSensorMovimiento funcionando")
-    """ pir = MotionSensor(4)
+    pir = MotionSensor(4)
     print("Desactivar el PIR")
     pir.when_motion = lambda: None  # Ignorar eventos de movimiento
     pir.when_no_motion = lambda: None  # Ignorar eventos de no movimiento
-    movimiento_detectado = False """
+    movimiento_detectado = False
 
 def luzAlarma():
     print("LuzAlarma funcionando")
-    """ while True:
-        # Encender el LED
-        led.on()
-        
-        time.sleep(1)  # Esperar 1 segundo
+    tiempo_total = 10  
+    tiempo_parpeo = 0.5  
 
-        # Apagar el LED
+    # Bucle para parpadear
+    while tiempo_total > 0:
+        led.on()
+        sleep(tiempo_parpeo)
         led.off()
-    
-        time.sleep(1)  # Esperar 1 segundo """
-    
+        break
 def encenderLucesDomesticas():
     print("encenderLucesDomesticas funcionando")
-    while True:
-        # Encender el LED
-        """ led.on() """
+    # Encender el LED
+    led.on() 
 def apagarLucesDomesticas():
     print("apagarLucesDomesticas funcionando")
-    """ led.off() """
+    led.off() 
 
 # Para probar la activacion constante del PIR
 #activarSensorMovimiento()

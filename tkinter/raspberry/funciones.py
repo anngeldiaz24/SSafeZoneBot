@@ -65,7 +65,7 @@ def cerrarServo():
 # Activar la alarma
 def activarAlarma():
     print("activarAlarma funcionando")
-    tiempo_total = 10  
+    tiempo_total = 15
     tiempo_parpeo = 0.5  
 
     # Bucle para parpadear
@@ -115,15 +115,21 @@ def desactivarSensorMovimiento():
 
 def luzAlarma():
     print("LuzAlarma funcionando")
-    tiempo_total = 10  
-    tiempo_parpeo = 0.5  
+    
 
-    # Bucle para parpadear
+    tiempo_total = 10  # Tiempo total en segundos
+    tiempo_parpeo = 0.5  # Tiempo de cada parpadeo
+
+    # Bucle para parpadear durante 10 segundos
     while tiempo_total > 0:
         led.on()
         sleep(tiempo_parpeo)
         led.off()
-        break
+        sleep(tiempo_parpeo)
+        tiempo_total -= tiempo_parpeo * 2
+
+    print("LuzAlarma apagada")
+
 def encenderLucesDomesticas():
     print("encenderLucesDomesticas funcionando")
     # Encender el LED

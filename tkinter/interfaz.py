@@ -397,7 +397,7 @@ def send_help_command(message):
         return
     
     bot.send_chat_action(message.chat.id, "typing")
-    bot.reply_to(message, 'ℹ️ Puedes interactuar conmigo usando comandos.\nPor ahora, solo respondo a /start, /register, /list_users, /photo, /document y /help')
+    bot.reply_to(message, 'Para mas informacion ingrese a https://www.samsung.com/mx/support/ o marque al 800 7267 864 En un horario de Lunes a Domingo de las 8:00 hrs. a las 23:00 hrs.')
 
 # Responde a los mensajes de texto que no son comandos
 @bot.message_handler(content_types=["text"])

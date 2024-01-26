@@ -1,6 +1,6 @@
 import tkinter as tk
 from config import COLOR_CUERPO_PRINCIPAL
-#import cv2
+import cv2
 from PIL import Image, ImageTk
 import datetime
 import os
@@ -75,7 +75,7 @@ class HogarDesign():
         self.panel = panel_principal
         
         
-    def mostrar_video(self):
+    '''def mostrar_video(self):
         # Iniciar captura de video desde la cámara
         captura = cv2.VideoCapture(0)  # 0 para la cámara predeterminada
 
@@ -94,9 +94,9 @@ class HogarDesign():
             # Actualizar el video después de un breve tiempo
             self.label_video.after(10, actualizar_video)
 
-        actualizar_video() 
+        actualizar_video() '''
     
-    """ def mostrar_video(self):
+    def mostrar_video(self):
         #Descomentar cuando se utilice la raspberry
         # Iniciar la transmisión desde la URL
         stream = urlopen('http://10.206.23.220:81/stream')
@@ -126,7 +126,7 @@ class HogarDesign():
             self.label_video.after(10, actualizar_video)
 
         # Llamada inicial a la función de actualización
-        actualizar_video() """
+        actualizar_video()
 
     
     def funcion_btn1(self):

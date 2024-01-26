@@ -654,7 +654,7 @@ def activar_modo_seguro():
                     bot.send_message(admin_chat_id, "🚨🔊 <b>ALERTA</b> 🔊🚨\n<code>¡Se ha detectado movimiento en el hogar!</code>", parse_mode="html") # Axl
                 print('\n')
 
-                time.sleep(3)  # Espera 10 segundos entre cada mensaje
+                time.sleep(10)  # Espera 10 segundos entre cada mensaje
             # Inicializa un diccionario para almacenar los message_id
             message_ids = {}
 
